@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing');
 Route::view('/coba', 'game', ['sync' => false]);
+// App lama yang sudah terinstal masih membuka start_url ini; landing mengalihkannya ke /app.
+Route::redirect('/index.html', '/');
 
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth', ['mode' => 'login'])->name('login');

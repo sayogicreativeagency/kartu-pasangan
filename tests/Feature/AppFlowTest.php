@@ -18,6 +18,7 @@ class AppFlowTest extends TestCase
         $this->get('/coba')->assertOk()->assertSee('Kartu Pasangan');
         $this->get('/app')->assertRedirect('/login');
         $this->get('/login')->assertOk();
+        $this->get('/index.html')->assertRedirect('/');
     }
 
     public function test_installed_app_starts_at_app_route(): void
