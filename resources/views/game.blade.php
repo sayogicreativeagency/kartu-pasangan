@@ -3,10 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kartu Pasangan</title>
-<link rel="manifest" href="manifest.json">
+<title>Sayogi Mesra — Kartu Pasangan</title>
+@unless ($sync)
+<script>if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)location.replace('/app')</script>
+@endunless
+<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#170f16">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="/icon-192.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
@@ -152,7 +155,7 @@
 <body>
 <div id="app">
   <header>
-    <div class="brand">🎴 Kartu Pasangan <small id="hdrNote"></small></div>
+    <div class="brand">🎴 Kartu Pasangan <small id="hdrNote"></small>@unless ($sync)<a href="/app" style="color:var(--rose);font-size:13px;margin-left:8px">Masuk</a>@endunless</div>
     <div class="modes" id="modeBar"></div>
     <div class="turn" id="turnBar"></div>
   </header>
@@ -162,7 +165,11 @@
       <div class="dots" id="obDots"></div>
       <div id="obBody"></div>
       <div class="obnav" id="obNav"></div>
+      @if ($sync)
+      <div class="note" style="margin-top:16px">Data kalian (nama, kartu tulisan sendiri, pengaturan) tersimpan <b>terenkripsi di akun kalian</b> di server, jadi ikut ke HP mana pun kalian login. 🔒</div>
+      @else
       <div class="note" style="margin-top:16px">Data kalian (nama, kartu tulisan sendiri, pengaturan) cuma tersimpan di HP ini — <b>nggak dikirim ke mana-mana</b>. 🔒</div>
+      @endif
     </section>
 
     <section class="screen" id="s-consent">
@@ -226,8 +233,13 @@
       <button class="btn ghost" id="setSave" style="margin-top:10px">Simpan pengaturan</button>
 
       <div class="note" style="margin-top:18px"><b>💾 Data &amp; Pindah ke HP</b><br>
+        @if ($sync)
+        Data kalian otomatis tersimpan di akun. Backup ini buat cadangan kalau mau simpan sendiri.
+        @else
         Data kalian (nama, kartu tulisan sendiri, pengaturan) cuma tersimpan di browser yang ini.
-        Kalau mau dimainkan di HP atau browser lain, <b>ekspor di sini → impor di sana</b>.</div>
+        Kalau mau dimainkan di HP atau browser lain, <b>ekspor di sini → impor di sana</b>.
+        @endif
+      </div>
 
       <div class="rinci" id="bpRingkas">Belum ada backup dibuat.</div>
       <div class="row">
@@ -277,6 +289,9 @@
       <div class="note"><b>Kalau ada yang nggak nyaman → berhenti dan ngobrol.</b> Aplikasi ini cuma alat. Kalian yang nomor satu. 🫶</div>
       <button class="btn soft" id="btnSetupUlang">🔄 Setup ulang (nama, mode, helai)</button>
       <button class="btn ghost" id="btnReset" style="margin-top:10px">Reset sesi (kartu buatan kalian tetap aman)</button>
+      @if ($sync)
+      <form method="post" action="/logout" id="logoutForm">@csrf<button class="btn ghost" style="margin-top:10px">Keluar dari akun</button></form>
+      @endif
     </section>
   </main>
 
@@ -407,7 +422,7 @@ const SAFE_DEFAULT = 'BERHENTI';
 const MODE_LABEL = {manis:'KARTU MANIS', main:'PERMAINAN LUCU', nakal:'PERMAINAN NAKAL 🔥'};
 
 /* ================= state ================= */
-const KEY='kartu_pasangan_v2', OLDKEY='kartu_pasangan_v1';
+const KEY='kartu_pasangan_{{ $sync ? 'u'.auth()->id() : 'v2' }}', OLDKEY='kartu_pasangan_v1';
 const S0 = () => ({
   players:['',''], mode:'main', babak:1, onboarded:false,
   consent:{a:false,b:false,word:SAFE_DEFAULT,on:false},
@@ -1309,11 +1324,68 @@ $('bpTerap').onclick = kpTerapImpor;
 $('bpFile').onclick = ()=> $('bpFileInput').click();
 $('bpFileInput').onchange = kpAmbilFile;
 
-switchTab('game');   // render() di bawah yang nentuin layar mana yang tampil (wizard vs game)
-render();
+function boot(){
+  switchTab('game');   // render() di bawah yang nentuin layar mana yang tampil (wizard vs game)
+  render();
+}
+@if ($sync)
+/* ================= sinkron ke akun (MySQL), localStorage tetap jadi cadangan offline ================= */
+// ponytail: last-write-wins per perangkat (S._at), merge per field kalau main bareng di 2 HP jadi kebutuhan
+let csrf = '{{ csrf_token() }}', pushT = 0;
+function kpPull(ms = 10000){
+  return fetch('/app/state', {headers:{Accept:'application/json'}, signal:AbortSignal.timeout(ms)}).then(r => {
+    if(r.status === 401){ location.replace('/login'); throw r; }
+    if(!r.ok) throw r;
+    csrf = r.headers.get('X-CSRF-Token') || csrf;
+    return r.json();
+  });
+}
+function kpPush(retry = true, keepalive = false){
+  return fetch('/app/state', {method:'PUT', keepalive,
+    headers:{'Content-Type':'application/json', Accept:'application/json', 'X-CSRF-TOKEN':csrf}, body:JSON.stringify(S)
+  }).then(r => {
+    if(r.status === 419 && retry) return kpPull().then(() => kpPush(false));   // sesi diperbarui remember cookie, token lama basi
+    return r.ok;
+  }).catch(() => false);   // offline: datanya aman di localStorage, terkirim saat app dibuka lagi
+}
+save = (simpanLokal => () => {
+  S._at = Date.now();
+  simpanLokal();
+  clearTimeout(pushT);
+  pushT = setTimeout(() => { pushT = 0; kpPush(); }, 800);
+})(save);
+document.addEventListener('visibilitychange', () => {
+  if(document.hidden && pushT){ clearTimeout(pushT); pushT = 0; kpPush(true, true); }
+});
+$('logoutForm').onsubmit = e => {
+  e.preventDefault();
+  clearTimeout(pushT);
+  kpPush().then(ok => {
+    if(!ok){ toast('Belum tersimpan ke server — butuh internet buat keluar'); return; }
+    localStorage.removeItem(KEY);
+    const bersih = window.caches ? caches.delete('kartu-pasangan-v5') : Promise.resolve();
+    bersih.finally(() => e.target.submit());
+  });
+};
+$('navBar').style.display = 'none';
+$('obBody').innerHTML = '<p class="sub">Mengambil data akun…</p>';
+kpPull(S._at ? 3000 : 20000).then(srv => {
+  const lokal = S._at || 0, server = (srv && srv._at) || 0;
+  if(server > lokal){ S = Object.assign(S0(), srv); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+  else if(lokal > server) kpPush();
+  boot();
+}, () => {
+  if(S._at){ boot(); return; }
+  // HP baru & data akun gagal diambil: jangan tampilkan wizard kosong, isinya nanti menimpa data akun
+  $('obBody').innerHTML = '<p class="sub">Belum bisa mengambil data akun. Cek internet kalian, lalu coba lagi.</p>' +
+    '<button class="btn" onclick="location.reload()">Coba lagi</button>';
+});
+@else
+boot();
+@endif
 
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.register('/sw.js').catch(()=>{});
 }
 /* helper tes */
 window.KP = {

@@ -29,24 +29,37 @@ perintahnya / main mini-gamenya, giliran bergantian.
 
 ## Cara pakai
 
-1. Buka alamatnya di browser HP (Chrome/Safari).
+1. Buka alamatnya di browser HP (Chrome/Safari): tampil landing, bisa langsung dicoba tanpa akun.
 2. Menu browser → **Tambahkan ke layar utama** (Add to Home Screen) → jadi seperti aplikasi.
-3. Isi nama kalian, pilih mode, jumlah helai, baca penjelasan + aturan penting, mulai main.
+3. Dari aplikasi: login dulu. Setelah itu sesinya tersimpan di HP, jadi tiap dibuka langsung ke game.
+4. Isi nama kalian, pilih mode, jumlah helai, baca penjelasan + aturan penting, mulai main.
 
-**Semua data (nama, kartu tulisan sendiri, pengaturan) disimpan lokal di HP itu saja**
-(`localStorage`) — tidak dikirim ke server mana pun. Pindah HP/browser lewat
-tab 🃏 Isi → **Buat backup** → impor di perangkat lain.
+**Tanpa akun (landing), data disimpan lokal di HP itu saja** (`localStorage`), tidak dikirim ke server.
+**Setelah login, data disimpan terenkripsi di akun** (MySQL), jadi ikut ke HP mana pun kalian login.
 
 Service worker membuat app tetap jalan **offline** setelah dibuka sekali.
 
-## Isi folder
+## Alur halaman
 
-| File | Fungsi |
+| URL | Isi |
 |---|---|
-| `index.html` | seluruh aplikasi (UI + logika, satu file) |
-| `manifest.json` | metadata PWA (nama, ikon, mode standalone) |
-| `sw.js` | service worker (cache offline, cache `kartu-pasangan-v4`) |
-| `icon-192.png`, `icon-512.png` | ikon aplikasi |
+| `/` | Landing (game, data lokal). Kalau terbuka dari aplikasi terinstal, dialihkan ke `/app` |
+| `/app` | `start_url` aplikasi. Belum login → `/login`; sudah login → game, data sinkron ke akun |
+| `/login`, `/register` | Akun. Remember cookie selalu aktif, jadi sesi tetap ada di HP |
+
+## Pasang lokal (Herd + MySQL)
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+herd link sayogi-mesra
+herd secure sayogi-mesra
+```
+
+Isi kredensial `DB_*` di `.env` sebelum `migrate`. Game ada di `resources/views/game.blade.php`,
+service worker di `public/sw.js` (naikkan nama cache-nya kalau asset berubah).
 
 ## Isi kartu bisa kalian tulis sendiri
 
