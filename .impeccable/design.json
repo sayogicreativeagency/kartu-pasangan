@@ -1,0 +1,302 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T08:47:24Z",
+  "title": "Design System: Sayogi Mesra",
+  "extensions": {
+    "colorMeta": {
+      "pink": {
+        "role": "primary",
+        "displayName": "Pink Panas",
+        "canonical": "#ff5a9e",
+        "tonalRamp": [
+          "oklch(15% 0.208 358.5)",
+          "oklch(26% 0.208 358.5)",
+          "oklch(38% 0.208 358.5)",
+          "oklch(49% 0.208 358.5)",
+          "oklch(61% 0.208 358.5)",
+          "oklch(72% 0.208 358.5)",
+          "oklch(84% 0.208 358.5)",
+          "oklch(95% 0.208 358.5)"
+        ]
+      },
+      "aubergine": {
+        "role": "neutral",
+        "displayName": "Aubergine Malam",
+        "canonical": "#3a1238",
+        "tonalRamp": [
+          "oklch(15% 0.084 329.6)",
+          "oklch(26% 0.084 329.6)",
+          "oklch(38% 0.084 329.6)",
+          "oklch(49% 0.084 329.6)",
+          "oklch(61% 0.084 329.6)",
+          "oklch(72% 0.084 329.6)",
+          "oklch(84% 0.084 329.6)",
+          "oklch(95% 0.084 329.6)"
+        ]
+      },
+      "blush": {
+        "role": "neutral",
+        "displayName": "Blush Kertas",
+        "canonical": "#ffe3ee",
+        "tonalRamp": [
+          "oklch(15% 0.034 352.0)",
+          "oklch(26% 0.034 352.0)",
+          "oklch(38% 0.034 352.0)",
+          "oklch(49% 0.034 352.0)",
+          "oklch(61% 0.034 352.0)",
+          "oklch(72% 0.034 352.0)",
+          "oklch(84% 0.034 352.0)",
+          "oklch(95% 0.034 352.0)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "H1 hero desktop; di HP mengecil ke 1.75rem agar muat di layar pertama."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Judul bagian, dibatasi sekitar 12ch."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nama item menu dan judul pasal."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Semua teks kerja, 42 sampai 48ch."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Tombol label cetak."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Level menu, judul slip, label form."
+      },
+      "handwritten": {
+        "displayName": "Handwritten",
+        "purpose": "Hanya teks yang dalam dunianya ditulis tangan: isi pesanan dan notes."
+      },
+      "stamp": {
+        "displayName": "Stamp",
+        "purpose": "Satu kata huruf besar di dalam cap tinta."
+      }
+    },
+    "shadows": [
+      {
+        "name": "halftone",
+        "value": "radial-gradient(circle, <tinta> 34%, transparent 37%) 0 0/9px 9px",
+        "purpose": "Bayangan titik di belakang gantungan, slip, dan notes, digeser sekitar 10px ke kanan bawah. Bukan box-shadow."
+      },
+      {
+        "name": "label-inner-rule",
+        "value": "inset 0 0 0 4px <bidang>, inset 0 0 0 5.5px <garis>",
+        "purpose": "Garis dalam tombol utama dan tombol tinta. Blur nol."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-settle",
+        "value": "cubic-bezier(.16,1,.3,1)",
+        "purpose": "Easing semua ayunan, balikan, dan hover tombol."
+      },
+      {
+        "name": "swing-settle",
+        "value": "1.9s",
+        "purpose": "Ayunan gantungan saat halaman dibuka, berporos di lubang kenop."
+      },
+      {
+        "name": "swing-tap",
+        "value": "1.2s",
+        "purpose": "Ayunan pendek saat gantungan disentuh atau kartu ditarik."
+      },
+      {
+        "name": "swing-keys",
+        "value": "2.2s",
+        "purpose": "Ayunan kunci penutup saat masuk viewport."
+      },
+      {
+        "name": "hanger-flip",
+        "value": ".85s",
+        "purpose": "Balikan rotateY gantungan menjadi kartu."
+      },
+      {
+        "name": "button-lift",
+        "value": ".25s",
+        "purpose": "Tombol naik 2px saat hover."
+      },
+      {
+        "name": "color-change",
+        "value": ".2s",
+        "purpose": "Pergantian warna tombol dan baris menu."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "menu-compact",
+        "value": "520px"
+      },
+      {
+        "name": "split",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Tombol Utama",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Label cetak pink untuk tindakan utama di bidang aubergine.",
+      "html": "<div class=\"ds-field\"><a class=\"ds-btn-main\" href=\"#\">Daftar, ambil kuncinya</a></div>",
+      "css": ".ds-field{background:var(--aub,#3a1238);padding:24px} .ds-btn-main{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:12px 26px;border-radius:2px;font:700 1.0625rem/1.55 var(--body,\"Figtree\",system-ui,sans-serif);text-decoration:none;text-align:center;cursor:pointer;transition:transform .25s var(--ease,cubic-bezier(.16,1,.3,1)),background-color .2s,color .2s;background:var(--pink,#ff5a9e);color:var(--aub,#3a1238);box-shadow:inset 0 0 0 4px var(--pink,#ff5a9e),inset 0 0 0 5.5px var(--aub,#3a1238)} .ds-btn-main:hover{transform:translateY(-2px)} .ds-btn-main:active{transform:translateY(0) scale(.98)} .ds-btn-main:hover{background:var(--blush,#ffe3ee);box-shadow:inset 0 0 0 4px var(--blush,#ffe3ee),inset 0 0 0 5.5px var(--aub,#3a1238)} .ds-btn-main:focus-visible{outline:2px solid var(--blush,#ffe3ee);outline-offset:3px}"
+    },
+    {
+      "name": "Tombol Garis",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Tindakan kedua: garis 2px tanpa isi, terisi penuh saat hover.",
+      "html": "<div class=\"ds-field\"><a class=\"ds-btn-line\" href=\"#\">Coba dulu tanpa akun</a></div>",
+      "css": ".ds-field{background:var(--aub,#3a1238);padding:24px} .ds-btn-line{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:12px 26px;border-radius:2px;font:700 1.0625rem/1.55 var(--body,\"Figtree\",system-ui,sans-serif);text-decoration:none;text-align:center;cursor:pointer;transition:transform .25s var(--ease,cubic-bezier(.16,1,.3,1)),background-color .2s,color .2s;border:2px solid var(--blush,#ffe3ee);color:var(--blush,#ffe3ee)} .ds-btn-line:hover{transform:translateY(-2px)} .ds-btn-line:active{transform:translateY(0) scale(.98)} .ds-btn-line:hover{background:var(--blush,#ffe3ee);color:var(--aub,#3a1238)} .ds-btn-line:focus-visible{outline:2px solid var(--blush,#ffe3ee);outline-offset:3px}"
+    },
+    {
+      "name": "Tombol Tinta",
+      "kind": "button",
+      "refersTo": "button-ink",
+      "description": "Padanan tombol utama di bidang pink dan kertas blush.",
+      "html": "<div class=\"ds-field-pink\"><a class=\"ds-btn-ink\" href=\"#\">Pesan, coba sekarang</a></div>",
+      "css": ".ds-field-pink{background:var(--pink,#ff5a9e);padding:24px} .ds-btn-ink{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:12px 26px;border-radius:2px;font:700 1.0625rem/1.55 var(--body,\"Figtree\",system-ui,sans-serif);text-decoration:none;text-align:center;cursor:pointer;transition:transform .25s var(--ease,cubic-bezier(.16,1,.3,1)),background-color .2s,color .2s;background:var(--aub,#3a1238);color:var(--blush,#ffe3ee);box-shadow:inset 0 0 0 4px var(--aub,#3a1238),inset 0 0 0 5.5px var(--blush,#ffe3ee)} .ds-btn-ink:hover{transform:translateY(-2px) rotate(-.6deg)} .ds-btn-ink:active{transform:translateY(0) scale(.98)} .ds-btn-ink:focus-visible{outline:2px solid var(--aub,#3a1238);outline-offset:3px}"
+    },
+    {
+      "name": "Bar Atas",
+      "kind": "nav",
+      "refersTo": "plate",
+      "description": "Wordmark, plat 18+ yang selalu terlihat, dan tautan masuk.",
+      "html": "<header class=\"ds-bar\"><a class=\"ds-mark\" href=\"#\">Sayogi Mesra</a><span class=\"ds-plate\">Khusus 18+</span><a class=\"ds-login\" href=\"#\">Masuk</a></header>",
+      "css": ".ds-bar{display:flex;align-items:center;gap:12px;padding:12px 18px;background:var(--aub,#3a1238);color:var(--blush,#ffe3ee);font-family:var(--body,\"Figtree\",system-ui,sans-serif)} .ds-mark{font:400 1.2rem/1 var(--display,\"Rozha One\",Georgia,serif);color:inherit;text-decoration:none;white-space:nowrap} .ds-plate{padding:4px 10px;background:var(--blush,#ffe3ee);color:var(--aub,#3a1238);border-radius:3px;font-size:.8125rem;font-weight:700;line-height:1.3;white-space:nowrap} .ds-login{margin-left:auto;display:inline-flex;align-items:center;min-height:44px;padding:0 6px;font-weight:600;color:inherit;text-underline-offset:.22em;text-decoration-thickness:1.5px} .ds-login:focus-visible,.ds-mark:focus-visible{outline:2px solid var(--blush,#ffe3ee);outline-offset:3px}"
+    },
+    {
+      "name": "Baris Menu",
+      "kind": "card",
+      "refersTo": "menu-row",
+      "description": "Baris menu layanan kamar di bidang pink; terpilih terisi aubergine.",
+      "html": "<div class=\"ds-rows\"><button class=\"ds-row is-on\" type=\"button\"><span class=\"ds-row-top\"><span class=\"ds-row-name\">Kartu Manis</span><span class=\"ds-row-dots\"></span><span class=\"ds-row-level\">Tanpa skor</span></span><span class=\"ds-row-desc\">Tiga babak kartu romantis, dengan jeda ngobrol tiap lima kartu.</span></button><button class=\"ds-row\" type=\"button\"><span class=\"ds-row-top\"><span class=\"ds-row-name\">Permainan Lucu</span><span class=\"ds-row-dots\"></span><span class=\"ds-row-level\">26 mini game</span></span><span class=\"ds-row-desc\">Pakai gelas, koin, atau bantal, bisa juga tanpa alat.</span></button></div>",
+      "css": ".ds-rows{background:var(--pink,#ff5a9e);color:var(--aub,#3a1238);padding:20px;font-family:var(--body,\"Figtree\",system-ui,sans-serif)} .ds-row{display:block;width:100%;padding:18px 12px;text-align:left;background:none;border:0;border-bottom:2px solid var(--aub,#3a1238);color:inherit;font:400 1rem/1.55 var(--body,\"Figtree\",system-ui,sans-serif);cursor:pointer;transition:background-color .2s,color .2s} .ds-row-top{display:flex;align-items:baseline;gap:10px} .ds-row-name{font:400 clamp(1.5rem,5.6vw,2.25rem)/1.1 var(--display,\"Rozha One\",Georgia,serif)} .ds-row-dots{flex:1;min-width:16px;border-bottom:2px dotted currentColor;translate:0 -.3em} .ds-row-level{font-weight:700;font-size:.9375rem;white-space:nowrap} .ds-row-desc{display:block;margin-top:6px;max-width:48ch} .ds-row.is-on{background:var(--aub,#3a1238);color:var(--blush,#ffe3ee)} .ds-row:focus-visible{outline:2px solid var(--aub,#3a1238);outline-offset:3px}"
+    },
+    {
+      "name": "Slip Pesanan",
+      "kind": "card",
+      "refersTo": "order-slip",
+      "description": "Slip blush bertepi perforasi dengan bayangan halftone dan isi tulisan tangan.",
+      "html": "<div class=\"ds-field-pink\"><div class=\"ds-slip-wrap\"><aside class=\"ds-slip\"><h3 class=\"ds-slip-h\">Contoh pesanan</h3><p class=\"ds-slip-text\">Cium pasanganmu seperti ciuman pertama.</p><p class=\"ds-slip-mode\">Kartu Manis, babak 3</p></aside></div></div>",
+      "css": ".ds-field-pink{background:var(--pink,#ff5a9e);padding:24px 34px 34px 24px} .ds-slip-wrap{position:relative} .ds-slip-wrap::before{content:'';position:absolute;inset:10px -9px -11px 9px;background:radial-gradient(circle,var(--aub,#3a1238) 34%,transparent 37%) 0 0/9px 9px} .ds-slip{position:relative;padding:30px 24px 24px;background:var(--blush,#ffe3ee);color:var(--aub,#3a1238);font-family:var(--body,\"Figtree\",system-ui,sans-serif);-webkit-mask:radial-gradient(circle 7px at 50% 0,transparent 98%,#000) 0 0/26px 100% repeat-x;mask:radial-gradient(circle 7px at 50% 0,transparent 98%,#000) 0 0/26px 100% repeat-x} .ds-slip-h{margin:0;font:700 .9375rem/1.3 var(--body,\"Figtree\",system-ui,sans-serif);padding-bottom:10px;border-bottom:2px solid var(--aub,#3a1238)} .ds-slip-text{margin:16px 0 0;font:400 1.25rem/1.75 var(--hand,\"Homemade Apple\",cursive)} .ds-slip-mode{margin:14px 0 0;font-weight:700}"
+    },
+    {
+      "name": "Notes Bergaris",
+      "kind": "input",
+      "refersTo": "notepad",
+      "description": "Field tulisan tangan di atas garis pink, tanpa bingkai.",
+      "html": "<div class=\"ds-field\"><div class=\"ds-pad-wrap\"><div class=\"ds-pad\"><label class=\"ds-pad-l\" for=\"ds-note\">Coba tulis satu kartu</label><textarea class=\"ds-pad-t\" id=\"ds-note\" placeholder=\"Malam ini kamu yang…\"></textarea></div></div></div>",
+      "css": ".ds-field{background:var(--aub,#3a1238);padding:24px 34px 34px 24px} .ds-pad-wrap{position:relative} .ds-pad-wrap::before{content:'';position:absolute;inset:11px -10px -12px 10px;background:radial-gradient(circle,var(--pink,#ff5a9e) 34%,transparent 37%) 0 0/9px 9px} .ds-pad{position:relative;background:var(--blush,#ffe3ee);color:var(--aub,#3a1238);padding:18px 20px 24px;font-family:var(--body,\"Figtree\",system-ui,sans-serif)} .ds-pad-l{display:block;font-weight:700;font-size:.9375rem} .ds-pad-t{display:block;width:100%;box-sizing:border-box;height:calc(2.5rem*3);margin-top:6px;padding:0;border:0;resize:none;color:var(--aub,#3a1238);caret-color:var(--aub,#3a1238);font:400 1.0625rem/2.5rem var(--hand,\"Homemade Apple\",cursive);background:repeating-linear-gradient(transparent 0 calc(2.5rem - 2px),var(--pink,#ff5a9e) calc(2.5rem - 2px) 2.5rem)} .ds-pad-t:focus-visible{outline:2px solid var(--aub,#3a1238);outline-offset:4px} .ds-pad-t::placeholder{color:var(--aub,#3a1238);opacity:.72}"
+    },
+    {
+      "name": "Lembar Peraturan dan Cap",
+      "kind": "card",
+      "refersTo": "notice-sheet",
+      "description": "Lembar blush berbingkai ganda dengan pasal dan cap tinta. Tekstur cap (stamp-ink.webp) tidak disertakan di snippet ini.",
+      "html": "<div class=\"ds-field\"><div class=\"ds-notice\"><h2 class=\"ds-notice-h\">Peraturan kamar</h2><div class=\"ds-pasal\"><h3 class=\"ds-pasal-h\">Pasal 2: Ada kata aman.</h3><p class=\"ds-pasal-p\">Sebut, permainan berhenti total. Tanpa alasan, tanpa denda.</p><span class=\"ds-stamp\">BERHENTI</span></div></div></div>",
+      "css": ".ds-field{background:var(--aub,#3a1238);padding:24px} .ds-notice{background:var(--blush,#ffe3ee);color:var(--aub,#3a1238);padding:30px 24px;outline:2px solid var(--blush,#ffe3ee);outline-offset:6px;font-family:var(--body,\"Figtree\",system-ui,sans-serif)} .ds-notice-h{margin:0;font:400 2.5rem/1 var(--display,\"Rozha One\",Georgia,serif)} .ds-pasal{margin-top:26px;padding-top:14px;border-top:2px solid var(--aub,#3a1238)} .ds-pasal-h{margin:0;font:400 1.45rem/1.14 var(--display,\"Rozha One\",Georgia,serif)} .ds-pasal-p{margin:6px 0 0;max-width:42ch} .ds-stamp{display:inline-block;margin-top:12px;padding:6px 14px 4px;border:3.5px solid var(--aub,#3a1238);border-radius:6px;font:400 1.625rem/1.1 var(--display,\"Rozha One\",Georgia,serif);letter-spacing:.05em;rotate:-3deg}"
+    },
+    {
+      "name": "Gantungan Pintu",
+      "kind": "custom",
+      "refersTo": "door-hanger",
+      "description": "Tanda tangan dunia ini: gantungan pink die-cut dengan kenop datar dan bayangan halftone. Cap bibir (lips.webp) tidak disertakan di snippet ini.",
+      "html": "<div class=\"ds-field\"><div class=\"ds-stage\"><div class=\"ds-dots\"></div><div class=\"ds-paper\"><p class=\"ds-sign\">Jangan Ganggu</p><p class=\"ds-tag\">Kami lagi main kartu.</p><svg class=\"ds-cuffs\" viewBox=\"0 0 320 116\" aria-hidden=\"true\"><g fill=\"none\" stroke=\"currentColor\"><circle cx=\"56\" cy=\"62\" r=\"40\" stroke-width=\"14\"/><circle cx=\"264\" cy=\"62\" r=\"40\" stroke-width=\"14\"/><ellipse cx=\"122\" cy=\"62\" rx=\"26\" ry=\"12\" stroke-width=\"8\"/><ellipse cx=\"198\" cy=\"62\" rx=\"26\" ry=\"12\" stroke-width=\"8\"/><ellipse cx=\"160\" cy=\"62\" rx=\"16\" ry=\"21\" stroke-width=\"8\"/></g><path d=\"M42 2h28v8h-6v20H48V10h-6zM250 2h28v8h-6v20h-16V10h-6zM88 53h14v18H88zM218 53h14v18h-14z\" fill=\"currentColor\"/></svg><button class=\"ds-knock\" type=\"button\">Ketuk, kalau berani</button></div><svg class=\"ds-knob\" viewBox=\"0 0 100 100\" aria-hidden=\"true\"><circle cx=\"50\" cy=\"50\" r=\"48\" fill=\"#ffe3ee\"/><circle cx=\"50\" cy=\"50\" r=\"33\" fill=\"none\" stroke=\"#3a1238\" stroke-width=\"4\"/><circle cx=\"50\" cy=\"50\" r=\"7\" fill=\"#3a1238\"/></svg></div></div>",
+      "css": ".ds-field{background:var(--aub,#3a1238);padding:24px 34px;--ds-w:240px} .ds-stage{position:relative;width:var(--ds-w);height:calc(var(--ds-w)*1.82);margin:auto} .ds-dots{position:absolute;inset:0;translate:calc(var(--ds-w)*.035) calc(var(--ds-w)*.04);background:radial-gradient(circle,var(--pink,#ff5a9e) 34%,transparent 37%) 0 0/9px 9px;-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 546' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M150 6C198 6 236 44 236 88C236 112 250 124 274 128C290 131 300 142 300 158L300 530A16 16 0 0 1 284 546L16 546A16 16 0 0 1 0 530L0 158C0 142 10 131 26 128C50 124 64 112 64 88C64 44 102 6 150 6ZM103.5 75a36 36 0 1 0 72 0a36 36 0 1 0 -72 0Z'/%3E%3C/svg%3E\") center/100% 100% no-repeat;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 546' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M150 6C198 6 236 44 236 88C236 112 250 124 274 128C290 131 300 142 300 158L300 530A16 16 0 0 1 284 546L16 546A16 16 0 0 1 0 530L0 158C0 142 10 131 26 128C50 124 64 112 64 88C64 44 102 6 150 6ZM103.5 75a36 36 0 1 0 72 0a36 36 0 1 0 -72 0Z'/%3E%3C/svg%3E\") center/100% 100% no-repeat} .ds-paper{position:absolute;inset:0;display:flex;flex-direction:column;align-items:flex-start;background:var(--pink,#ff5a9e);color:var(--aub,#3a1238);font-family:var(--body,\"Figtree\",system-ui,sans-serif);padding:calc(var(--ds-w)*.5) calc(var(--ds-w)*.09) calc(var(--ds-w)*.08);-webkit-mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 546' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M150 6C198 6 236 44 236 88C236 112 250 124 274 128C290 131 300 142 300 158L300 530A16 16 0 0 1 284 546L16 546A16 16 0 0 1 0 530L0 158C0 142 10 131 26 128C50 124 64 112 64 88C64 44 102 6 150 6ZM120 87a30 30 0 1 0 60 0a30 30 0 1 0 -60 0Z'/%3E%3C/svg%3E\") center/100% 100% no-repeat;mask:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 546' preserveAspectRatio='none'%3E%3Cpath fill-rule='evenodd' d='M150 6C198 6 236 44 236 88C236 112 250 124 274 128C290 131 300 142 300 158L300 530A16 16 0 0 1 284 546L16 546A16 16 0 0 1 0 530L0 158C0 142 10 131 26 128C50 124 64 112 64 88C64 44 102 6 150 6ZM120 87a30 30 0 1 0 60 0a30 30 0 1 0 -60 0Z'/%3E%3C/svg%3E\") center/100% 100% no-repeat} .ds-paper::before{content:'';position:absolute;left:50%;top:0;width:2px;height:calc(var(--ds-w)*.2);background:var(--aub,#3a1238);translate:-50% 0} .ds-sign{margin:0;font:400 calc(var(--ds-w)*.228)/.98 var(--display,\"Rozha One\",Georgia,serif);letter-spacing:-.01em} .ds-tag{margin:.45em 0 0;font-size:calc(var(--ds-w)*.064);font-weight:700;line-height:1.3} .ds-cuffs{width:calc(var(--ds-w)*.31);margin:12px 0 0 auto;rotate:-9deg} .ds-knob{position:absolute;left:50%;top:calc(var(--ds-w)*.29);width:calc(var(--ds-w)*.15);translate:-50% -50%;pointer-events:none} .ds-knock{margin-top:auto;width:100%;min-height:46px;padding:8px 12px;background:none;border:2px solid var(--aub,#3a1238);border-radius:2px;color:var(--aub,#3a1238);font:700 .875rem var(--body,\"Figtree\",system-ui,sans-serif);cursor:pointer;transition:background-color .2s,color .2s} .ds-knock:hover{background:var(--aub,#3a1238);color:var(--blush,#ffe3ee)} .ds-knock:focus-visible{outline:2px solid var(--aub,#3a1238);outline-offset:3px}"
+    },
+    {
+      "name": "Pita Ornamen",
+      "kind": "custom",
+      "description": "Pemisah antarbagian dari unit hati dan bibir yang selalu utuh.",
+      "html": "<div class=\"ds-band\" aria-hidden=\"true\"></div>",
+      "css": ".ds-band{height:46px;background-color:var(--aub,#3a1238);background-repeat:round;background-size:138px 46px;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 138 46' fill='%23ff5a9e'%3E%3Cpath d='M23 35 11 24c-6-6 2-14 8-9l4 4 4-4c6-5 14 3 8 9z'/%3E%3Cg transform='translate(62 13) scale(.3)'%3E%3Cpath d='M4 34C22 22 38 6 50 8c5 1 8 5 10 7 2-2 5-6 10-7 12-2 28 14 46 26-20-2-38 0-56 2-18-2-36-4-56-2z'/%3E%3Cpath d='M6 38c20-1 38 1 54 2 16-1 34-3 54-2-16 17-34 28-54 28S22 55 6 38z'/%3E%3C/g%3E%3C/svg%3E\")}"
+    }
+  ],
+  "narrative": {
+    "northStar": "Percetakan Kamar Bulan Madu",
+    "overview": "Semua yang tampil adalah barang cetakan dari sebuah kamar hotel bulan madu: gantungan pintu, menu layanan kamar, lembar peraturan, notes. Setiap barang dicetak flat dengan tiga tinta di atas bidang warna penuh, dengan huruf gemuk gaya hotel lama. Nadanya gelap dan pink manis, menggoda lewat kata dan cap bibir, tidak eksplisit. Pengguna sendiri memilih material ini setelah render 3D prosedural ditolak, jadi kerataan cetak adalah keputusan dunia, bukan keterbatasan.\n\nKedalaman datang dari cara kerja percetakan: bidang tinta, garis tinta, titik halftone yang meleset ke kanan bawah, dan tinta bertekstur pada cap. Gerak boleh hidup selama bendanya tetap kertas tipis: gantungan berayun dari lubang kenopnya dan terbalik untuk menampilkan kartu asli. Kepadatannya lapang di bidang, rapat di dalam barang cetakan, dengan target sentuh besar karena produk ini dipakai di HP dalam cahaya redup.\n\nCakupan: dunia ini baru berlaku pasti untuk landing di rute `/` (`resources/views/landing.blade.php`). Layar game (`resources/views/game.blade.php`) dan login (`resources/views/auth.blade.php`) masih memakai tampilan lama (latar `#170f16`, aksen mawar `#ff7aa2`, emas, hijau, sudut 20px, huruf sistem) dan belum dimigrasi. Itu drift yang diketahui; nilai lama itu bukan bagian dari sistem ini, dan migrasinya butuh keputusan tersendiri.",
+    "keyCharacteristics": [
+      "Tepat tiga tinta di bidang penuh, berganti antarbagian seperti lembar cetak yang berbeda.",
+      "Huruf display gemuk Rozha One, teks kerja Figtree, tulisan tangan Homemade Apple hanya di barang yang memang ditulis tangan.",
+      "Garis tinta 2px sebagai struktur; sudut nyaris tajam kecuali siluet die-cut.",
+      "Bayangan selalu titik halftone tanpa blur, meleset ke kanan bawah.",
+      "Motif cetak yang digambar sendiri: cap bibir, borgol kecil, hati, kunci, pita ornamen."
+    ],
+    "rules": [
+      {
+        "name": "The Three Ink Rule",
+        "body": "Hanya tiga warna ini yang boleh dicetak. Tonal ramp di `.impeccable/design.json` hanya untuk panel, bukan izin menambah tint di layar. Pengecualian yang ada di build hanya dua keadaan sementara: lapisan aubergine transparan saat baris menu di-hover dan placeholder notes.",
+        "section": "colors"
+      },
+      {
+        "name": "The Ink Pairing Rule",
+        "body": "Teks hanya dicetak dalam tiga pasangan: blush di aubergine (13,2:1), aubergine di blush (13,2:1), aubergine di pink (5,4:1). Blush di pink hanya 2,4:1, jadi tidak pernah dipakai untuk teks. Di build ini pink tidak dipakai sebagai warna teks; ia bidang, garis, dan titik.",
+        "section": "colors"
+      },
+      {
+        "name": "The Full Field Rule",
+        "body": "Warna dipakai sebagai bidang selebar layar, bukan aksen kecil di latar netral. Antarbagian berpindah tinta (aubergine, pink, aubergine, pink), dipisah pita ornamen.",
+        "section": "colors"
+      },
+      {
+        "name": "The Hand Means Hand Rule",
+        "body": "Homemade Apple hanya untuk teks yang dalam dunianya memang ditulis tangan: isi pesanan dan isi notes. Judul, tombol, dan keterangan tidak pernah memakainya.",
+        "section": "typography"
+      },
+      {
+        "name": "The Display Stays Regular Rule",
+        "body": "Rozha One hanya punya berat 400 dan kegemukannya sudah bawaan. Jangan menebalkannya secara sintetis, dan jangan memakainya untuk paragraf.",
+        "section": "typography"
+      },
+      {
+        "name": "The No Blur Rule",
+        "body": "Tidak ada `box-shadow` atau `filter` yang berblur. Depth dicetak, bukan dipancarkan. Gradien CSS bertepi tegas tetap sah sebagai alat untuk membuat titik halftone dan garis notes; yang dilarang adalah transisi warna yang terlihat.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Paper Thin Rule",
+        "body": "Benda boleh bergerak dalam ruang 3D selama tetap selembar kertas tanpa ketebalan, seperti gantungan yang berputar `rotateY`. Yang dilarang adalah tampilan benda 3D, bukan transform 3D.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Two Pixel Line Rule",
+        "body": "Struktur digambar dengan garis tinta 2px: kusen dan panel pintu, pemisah baris, pemisah pasal, tombol garis, dan pengarah bertitik di menu. Satu-satunya yang lebih berat adalah bingkai cap (3.5px); yang lebih halus adalah garis dalam tombol dan garis bawah tautan (1.5px).",
+        "section": "shapes"
+      },
+      {
+        "name": "The Whole Unit Rule",
+        "body": "Pita ornamen selalu menampilkan unit utuh (`background-repeat: round`), jumlahnya menyesuaikan lebar dan tidak pernah terpotong di tepi layar.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do mulai dari bidang penuh salah satu dari tiga tinta, lalu cetak garis, teks, dan motif di atasnya.",
+      "Do gambar motif baru sebagai bentuk flat satu tinta: SVG inline, atau raster prosedural yang dipakai sebagai mask dan mencatat asal-usulnya di sidecar `.json`.",
+      "Do beri bayangan pada barang cetakan dengan titik halftone 9px yang meleset ke kanan bawah.",
+      "Do pakai garis 2px untuk struktur dan sudut 2px untuk label cetak.",
+      "Do jaga target sentuh minimum 44px dan hormati `prefers-reduced-motion`.",
+      "Do tampilkan plat 18+ di landing tanpa pop-up gerbang."
+    ],
+    "donts": [
+      "Don't menirukan benda 3D: pintu ber-render, kenop logam, pita satin, bevel, atau kilap. Render 3D sudah ditolak; tiruan benda hanya boleh kembali kalau pengguna memberikan gambar aslinya.",
+      "Don't memakai gradien yang terlihat sebagai transisi warna atau bayangan berblur.",
+      "Don't menambah tinta keempat atau tint permanen di luar tiga warna ini.",
+      "Don't mencetak teks blush di atas pink (2,4:1).",
+      "Don't memotong unit pita ornamen di tepi layar.",
+      "Don't menyalin nilai dari `game.blade.php` atau `auth.blade.php` (latar `#170f16`, sudut 20px, emas, hijau, huruf sistem) ke permukaan dunia ini; itu tampilan lama yang belum dimigrasi."
+    ]
+  }
+}

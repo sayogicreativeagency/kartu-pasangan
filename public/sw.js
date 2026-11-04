@@ -1,11 +1,11 @@
 /* Kartu Pasangan — service worker: bikin app tetap jalan tanpa internet */
-const CACHE = 'kartu-pasangan-v5';
-const DOCS = ['/', '/app'];
+const CACHE = 'kartu-pasangan-v6';
+const DOCS = ['/', '/coba', '/app'];
 const ASSETS = ['/manifest.json', '/icon-192.png', '/icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => Promise.all([
-    c.addAll(['/', ...ASSETS]),
+    c.addAll(['/', '/coba', ...ASSETS]),
     // belum login = /app redirect (ok:false), dilewati; masuk cache saat dibuka setelah login
     fetch('/app', {redirect: 'manual'}).then(r => r.ok && c.put('/app', r)).catch(() => {})
   ])).then(() => self.skipWaiting()));

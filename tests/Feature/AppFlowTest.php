@@ -14,7 +14,8 @@ class AppFlowTest extends TestCase
 
     public function test_web_shows_landing_and_guest_app_goes_to_login(): void
     {
-        $this->get('/')->assertOk()->assertSee('Kartu Pasangan');
+        $this->get('/')->assertOk()->assertSee('Jangan Ganggu')->assertSee('Malam berdua')->assertSee('18+')->assertSee('/register')->assertSee('/coba');
+        $this->get('/coba')->assertOk()->assertSee('Kartu Pasangan');
         $this->get('/app')->assertRedirect('/login');
         $this->get('/login')->assertOk();
     }

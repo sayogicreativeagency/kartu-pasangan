@@ -1325,8 +1325,17 @@ $('bpFile').onclick = ()=> $('bpFileInput').click();
 $('bpFileInput').onchange = kpAmbilFile;
 
 function boot(){
+  const pesanan = new URLSearchParams(location.search).get('mode');   // dari menu landing
+  if(pesanan) history.replaceState(null, '', location.pathname);
+  const sah = ['manis','main','nakal'].includes(pesanan);
+  if(sah && !S.onboarded) obMode = pesanan;
   switchTab('game');   // render() di bawah yang nentuin layar mana yang tampil (wizard vs game)
   render();
+  if(sah && S.onboarded && S.mode !== pesanan){
+    const keGerbang = pesanan === 'nakal' && !S.consent.on;   // pilihMode cuma buka layar setuju, sesi tetap utuh
+    const sesiJalan = S.idx > 0 && S.phase !== 'done';
+    if(keGerbang || !sesiJalan || confirm('Sesi yang lagi jalan bakal diulang dari awal. Ganti mode?')) pilihMode(pesanan);
+  }
 }
 @if ($sync)
 /* ================= sinkron ke akun (MySQL), localStorage tetap jadi cadangan offline ================= */
@@ -1363,7 +1372,7 @@ $('logoutForm').onsubmit = e => {
   kpPush().then(ok => {
     if(!ok){ toast('Belum tersimpan ke server — butuh internet buat keluar'); return; }
     localStorage.removeItem(KEY);
-    const bersih = window.caches ? caches.delete('kartu-pasangan-v5') : Promise.resolve();
+    const bersih = window.caches ? caches.delete('kartu-pasangan-v6') : Promise.resolve();
     bersih.finally(() => e.target.submit());
   });
 };

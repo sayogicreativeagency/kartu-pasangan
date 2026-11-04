@@ -4,7 +4,8 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'game', ['sync' => false]);
+Route::view('/', 'landing');
+Route::view('/coba', 'game', ['sync' => false]);
 
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth', ['mode' => 'login'])->name('login');

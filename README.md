@@ -29,12 +29,12 @@ perintahnya / main mini-gamenya, giliran bergantian.
 
 ## Cara pakai
 
-1. Buka alamatnya di browser HP (Chrome/Safari): tampil landing, bisa langsung dicoba tanpa akun.
+1. Buka alamatnya di browser HP (Chrome/Safari): tampil landing, dan game bisa dicoba tanpa akun di `/coba`.
 2. Menu browser → **Tambahkan ke layar utama** (Add to Home Screen) → jadi seperti aplikasi.
 3. Dari aplikasi: login dulu. Setelah itu sesinya tersimpan di HP, jadi tiap dibuka langsung ke game.
 4. Isi nama kalian, pilih mode, jumlah helai, baca penjelasan + aturan penting, mulai main.
 
-**Tanpa akun (landing), data disimpan lokal di HP itu saja** (`localStorage`), tidak dikirim ke server.
+**Tanpa akun (`/coba`), data disimpan lokal di HP itu saja** (`localStorage`), tidak dikirim ke server.
 **Setelah login, data disimpan terenkripsi di akun** (MySQL), jadi ikut ke HP mana pun kalian login.
 
 Service worker membuat app tetap jalan **offline** setelah dibuka sekali.
@@ -43,7 +43,8 @@ Service worker membuat app tetap jalan **offline** setelah dibuka sekali.
 
 | URL | Isi |
 |---|---|
-| `/` | Landing (game, data lokal). Kalau terbuka dari aplikasi terinstal, dialihkan ke `/app` |
+| `/` | Landing. Kalau terbuka dari aplikasi terinstal, dialihkan ke `/app` |
+| `/coba` | Game tanpa akun, data lokal di HP |
 | `/app` | `start_url` aplikasi. Belum login → `/login`; sudah login → game, data sinkron ke akun |
 | `/login`, `/register` | Akun. Remember cookie selalu aktif, jadi sesi tetap ada di HP |
 
