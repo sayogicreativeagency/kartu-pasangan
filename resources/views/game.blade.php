@@ -4,12 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sayogi Mesra — Kartu Pasangan</title>
+@if ($sync)
+<meta name="robots" content="noindex">
+@else
+<meta name="description" content="Coba game kartu Sayogi Mesra tanpa akun: Kartu Manis, Permainan Lucu, dan Permainan Nakal untuk pasangan suami istri 18+.">
+<link rel="canonical" href="{{ url('/coba') }}">
+@endif
+<link rel="icon" href="/favicon.ico" sizes="any">
 @unless ($sync)
 <script>if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)location.replace('/app')</script>
 @endunless
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#170f16">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
@@ -1372,7 +1379,7 @@ $('logoutForm').onsubmit = e => {
   kpPush().then(ok => {
     if(!ok){ toast('Belum tersimpan ke server — butuh internet buat keluar'); return; }
     localStorage.removeItem(KEY);
-    const bersih = window.caches ? caches.delete('kartu-pasangan-v6') : Promise.resolve();
+    const bersih = window.caches ? caches.delete('kartu-pasangan-v7') : Promise.resolve();
     bersih.finally(() => e.target.submit());
   });
 };

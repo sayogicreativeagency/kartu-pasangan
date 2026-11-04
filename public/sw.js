@@ -1,5 +1,5 @@
 /* Kartu Pasangan — service worker: bikin app tetap jalan tanpa internet */
-const CACHE = 'kartu-pasangan-v6';
+const CACHE = 'kartu-pasangan-v7';
 const DOCS = ['/', '/coba', '/app'];
 const ASSETS = ['/manifest.json', '/icon-192.png', '/icon-512.png'];
 

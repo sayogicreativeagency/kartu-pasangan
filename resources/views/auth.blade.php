@@ -4,9 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>{{ $mode === 'login' ? 'Masuk' : 'Daftar' }} · Sayogi Mesra</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#170f16">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <style>
   :root{--bg:#170f16;--line:#3d2639;--ink:#fdeef5;--dim:#c39fb6;--rose:#ff7aa2;--rose2:#ff4d84}

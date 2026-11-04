@@ -21,6 +21,15 @@ class AppFlowTest extends TestCase
         $this->get('/index.html')->assertRedirect('/');
     }
 
+    public function test_seo_basics(): void
+    {
+        $this->get('/')->assertSee('og:image', false)->assertSee('"@context":"https://schema.org"', false)->assertDontSee('noindex');
+        $this->get('/login')->assertSee('noindex');
+        $this->actingAs(User::factory()->create())->get('/app')->assertSee('noindex');
+        $this->get('/robots.txt')->assertOk()->assertSee('Sitemap: '.url('/sitemap.xml'));
+        $this->get('/sitemap.xml')->assertOk()->assertSee(url('/coba'));
+    }
+
     public function test_installed_app_starts_at_app_route(): void
     {
         $manifest = json_decode(file_get_contents(public_path('manifest.json')), true);

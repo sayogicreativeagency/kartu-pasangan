@@ -3,12 +3,28 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Sayogi Mesra — Jangan Ganggu, kami lagi main kartu</title>
+<title>Sayogi Mesra — Game Kartu Pasangan Suami Istri 18+</title>
 <meta name="description" content="Game kartu buat pasangan suami istri 18+. Tarik kartu, ikuti perintahnya, giliran bergantian. Manis, lucu, atau nakal, kalian yang pilih.">
 <script>if(matchMedia('(display-mode: standalone)').matches||navigator.standalone)location.replace('/app')</script>
+<link rel="canonical" href="{{ url('/') }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sayogi Mesra">
+<meta property="og:locale" content="id_ID">
+<meta property="og:url" content="{{ url('/') }}">
+<meta property="og:title" content="Sayogi Mesra — Jangan Ganggu, kami lagi main kartu">
+<meta property="og:description" content="Game kartu buat pasangan suami istri 18+. Tarik kartu, turuti isinya, gantian. Manis, lucu, atau nakal, kalian yang pilih.">
+<meta property="og:image" content="{{ asset('landing/og.jpg') }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Tulisan Jangan Ganggu di samping gantungan pintu pink dengan cap bibir">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{"@@context":"https://schema.org","@@type":"WebApplication","name":"Sayogi Mesra","alternateName":"Kartu Pasangan","url":"{{ url('/') }}","image":"{{ asset('landing/og.jpg') }}","description":"Game kartu buat pasangan suami istri 18+. Tarik kartu, turuti isinya, gantian.","applicationCategory":"GameApplication","operatingSystem":"Web","inLanguage":"id","isFamilyFriendly":false,"publisher":{"@@type":"Organization","name":"Sayogi Creative"}}
+</script>
+<link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#3a1238">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preload" as="font" type="font/woff2" href="/landing/fonts/rozha-one.woff2" crossorigin>
 <style>
   @font-face{font-family:"Rozha One";src:url(/landing/fonts/rozha-one.woff2) format("woff2");font-weight:400;font-display:swap}
@@ -49,16 +65,14 @@
 
   /* Bar atas */
   .bar{position:absolute;inset:0 0 auto;z-index:5;display:flex;align-items:center;gap:12px;padding:12px max(18px,env(safe-area-inset-left)) 0}
-  .mark{font:400 1.2rem/1 var(--display);text-decoration:none;white-space:nowrap}
+  .mark{display:inline-flex;align-items:center;gap:8px;font:400 1.2rem/1 var(--display);text-decoration:none;white-space:nowrap}
+  .mark img{width:auto;height:30px}
   .plate{padding:4px 10px;background:var(--blush);color:var(--aub);border-radius:3px;font-size:.8125rem;font-weight:700;line-height:1.3;white-space:nowrap}
   .bar a.login{margin-left:auto;display:inline-flex;align-items:center;min-height:44px;padding:0 6px;font-weight:600}
 
   /* Pintu: garis tinta di bidang penuh */
   .door{position:relative;min-height:100svh;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:78px 34px 30px;background:var(--aub)}
-  .frame{position:absolute;inset:58px 8px 0;border:2px solid var(--pink);border-bottom:0;pointer-events:none}
-  .panel{position:absolute;border:2px solid var(--pink)}
-  .panel.a{inset:12px 10px 50% 10px}
-  .panel.b{inset:calc(50% + 12px) 10px 16px 10px}
+  .frame{position:absolute;left:0;right:0;top:54px;height:calc(var(--w)*1.82 + 44px);background:url(/landing/door.webp) center/100% 100% no-repeat;pointer-events:none}
   .giant{display:none}
 
   /* Gantungan */
@@ -83,7 +97,7 @@
   .tag{margin-top:.45em;font-size:calc(var(--w)*.064);font-weight:700;line-height:1.3}
   .fine{margin-top:.5em;max-width:58%;font-size:max(.9375rem,calc(var(--w)*.05));font-weight:500;line-height:1.3}
   .cuffs-small{position:absolute;right:calc(var(--w)*.045);top:calc(var(--w)*1.07);width:calc(var(--w)*.31);rotate:-9deg;color:var(--aub)}
-  .lips{position:absolute;left:calc(var(--w)*.08);bottom:calc(var(--w)*.285);width:calc(var(--w)*.37);aspect-ratio:900/560;rotate:-13deg;background:var(--aub);
+  .lips{position:absolute;left:calc(var(--w)*.08);bottom:calc(var(--w)*.285);width:calc(var(--w)*.37);aspect-ratio:1200/775;rotate:-13deg;background:var(--aub);
     -webkit-mask:url(/landing/lips.webp) center/100% 100% no-repeat;mask:url(/landing/lips.webp) center/100% 100% no-repeat}
   .knock{margin-top:auto;width:100%;min-height:46px;padding:8px 12px;border:2px solid var(--aub);border-radius:2px;
     font-weight:700;font-size:max(.875rem,calc(var(--w)*.054));transition:background-color .2s,color .2s}
@@ -200,9 +214,9 @@
     .about{margin-top:22px}
     .about p{font-size:clamp(1.0625rem,1.4vw,1.25rem);line-height:1.45}
     .pitch{display:flex;flex-direction:column}
-        .frame{inset:64px 0 0}
+        .frame{inset:64px 0 0;height:auto}
     .giant{display:block;position:absolute;pointer-events:none;background:radial-gradient(circle,var(--pink) 36%,transparent 39%) 0 0/8px 8px}
-    .giant-lips{left:-5vw;bottom:-9svh;width:27vw;aspect-ratio:900/560;rotate:-13deg;
+    .giant-lips{left:-5vw;bottom:-9svh;width:27vw;aspect-ratio:1200/775;rotate:-13deg;
       -webkit-mask:url(/landing/lips.webp) center/100% 100% no-repeat;mask:url(/landing/lips.webp) center/100% 100% no-repeat}
     .acts{flex-direction:row;flex-wrap:wrap;margin-top:12px}
     .close .acts{justify-content:center}
@@ -233,7 +247,7 @@
 </svg>
 
 <header class="bar">
-  <a class="mark" href="/">Sayogi Mesra</a>
+  <a class="mark" href="/"><img src="/landing/logo.webp" alt="" width="68" height="160">Sayogi Mesra</a>
   <span class="plate">Khusus 18+</span>
   <a class="login" href="/app">{{ auth()->check() ? 'Lanjut main' : 'Masuk' }}</a>
 </header>
@@ -243,7 +257,7 @@
     <div class="giant giant-lips"></div>
 
     <div class="doorway">
-    <div class="frame"><div class="panel a"></div><div class="panel b"></div></div>
+    <div class="frame"></div>
     <div class="stage">
       <div class="hang" id="hang">
         <div class="flip" id="flip">

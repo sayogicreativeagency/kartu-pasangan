@@ -9,6 +9,9 @@ Route::view('/coba', 'game', ['sync' => false]);
 // App lama yang sudah terinstal masih membuka start_url ini; landing mengalihkannya ke /app.
 Route::redirect('/index.html', '/');
 
+Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nSitemap: ".url('/sitemap.xml')."\n")->header('Content-Type', 'text/plain'));
+Route::get('/sitemap.xml', fn () => response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>'.url('/').'</loc></url><url><loc>'.url('/coba').'</loc></url></urlset>')->header('Content-Type', 'application/xml'));
+
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth', ['mode' => 'login'])->name('login');
     Route::view('/register', 'auth', ['mode' => 'register'])->name('register');

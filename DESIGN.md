@@ -289,3 +289,7 @@ Pita setinggi 46px dari unit hati dan bibir 138px di antara bagian, dalam warna 
 - **Don't** mencetak teks blush di atas pink (2,4:1).
 - **Don't** memotong unit pita ornamen di tepi layar.
 - **Don't** menyalin nilai dari `game.blade.php` atau `auth.blade.php` (latar `#170f16`, sudut 20px, emas, hijau, huruf sistem) ke permukaan dunia ini; itu tampilan lama yang belum dimigrasi.
+
+## Aset gambar
+
+Logo, pintu, dan cap bibir dibuat dengan OpenAI lewat `tools/generate_images.py`, model dari `AI_API_MODEL_GAMBAR` di `.env`. Prompt-nya ada di file itu dan di sidecar `public/landing/*.json`. Hasil mentah masuk `tools/generated` dan tidak di-commit. Tinta cap BERHENTI tetap prosedural dari `tools/landing_assets.py`.
