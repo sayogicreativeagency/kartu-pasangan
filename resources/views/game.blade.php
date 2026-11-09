@@ -170,6 +170,18 @@
   ul.imp li.big{font-size:15px}
   .obnav{display:flex;gap:8px;margin-top:16px}
   .obnav button{flex:1;padding:14px;font-size:15px}
+  /* iklan produk pendukung: <dialog> native, tutup dengan tombol atau Esc */
+  dialog.iklan{border:0;padding:0;background:none;color:var(--aub);width:min(92vw,380px);overflow:visible}
+  dialog.iklan::backdrop{background:rgba(58,18,56,.86)}
+  .iklan-lembar{position:relative;background:var(--blush);border-radius:2px;padding:14px 14px 16px}
+  .iklan-lembar::after{content:"";position:absolute;inset:10px -9px -11px 9px;z-index:-1;background:var(--dots-pink)}
+  .iklan-label{display:inline-block;font:700 11px/1 var(--body);letter-spacing:.08em;background:var(--aub);color:var(--blush);padding:5px 8px;border-radius:2px}
+  .iklan-lembar img{display:block;width:100%;height:auto;max-height:44vh;object-fit:contain;margin:10px 0 12px;background:#fff}
+  .iklan-lembar h3{font:400 24px/1.1 var(--display);margin:0 0 6px}
+  .iklan-lembar p{margin:0 0 12px;font-size:14.5px;font-weight:500}
+  .iklan-lembar .btn{display:flex;align-items:center;justify-content:center;text-decoration:none}
+  .iklan-lembar .btn.ghost{color:var(--aub);border-color:var(--aub);margin-top:8px}
+  .iklan-tutup{position:absolute;top:8px;right:8px;width:40px;height:40px;background:var(--aub);color:var(--blush);font:700 22px/1 var(--body);display:grid;place-items:center}
   @media (prefers-reduced-motion:reduce){
     .face{animation:none}
     .btn,.toast{transition:none}
@@ -325,6 +337,17 @@
     <button data-tab="rules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h10l4 4v12H5z"/><path d="M15 4v4h4M8 12h8M8 16h6"/></svg>Aturan</button>
   </nav>
   <div class="toast" id="toast"></div>
+  <dialog class="iklan" id="iklan" aria-labelledby="iklanNama">
+    <div class="iklan-lembar">
+      <span class="iklan-label">Produk pendukung · Sayogi Sedia</span>
+      <button class="iklan-tutup" type="button" id="iklanTutup" aria-label="Tutup iklan">×</button>
+      <img id="iklanGambar" alt="">
+      <h3 id="iklanNama"></h3>
+      <p id="iklanPengganti"></p>
+      <a class="btn" id="iklanTautan" target="_blank" rel="noopener">Lihat di Sayogi Sedia</a>
+      <button class="btn ghost" type="button" id="iklanLanjut">Tutup, lanjut main</button>
+    </div>
+  </dialog>
 </div>
 
 <script>
@@ -447,6 +470,7 @@ const MODE_LABEL = {manis:'KARTU MANIS', main:'PERMAINAN LUCU', nakal:'PERMAINAN
 
 /* ================= deck admin & batas coba (dari server) ================= */
 const ADMIN = @json($decks);
+const PRODUK = @json($produk);
 const BATAS_COBA = {{ $sync ? 0 : config('mesra.batas_coba') }};   // 0 = tanpa batas (akun berbayar)
 const HARGA = 'Rp {{ number_format(config('mesra.harga_sekali'), 0, ',', '.') }}';
 
@@ -510,6 +534,21 @@ function hukLucuPool(){ return (S.custom.hukL && S.custom.hukL.length) ? S.custo
 function hadiahOf(){ return (S.custom.hadiah && S.custom.hadiah.length) ? S.custom.hadiah : HADIAH; }
 function hukumOf(){ return (S.custom.hukum && S.custom.hukum.length) ? S.custom.hukum : HUK; }
 
+/* ================= produk pendukung ================= */
+const sudahIklan = new Set();
+function cekProduk(...teks){
+  const isi = ' ' + teks.filter(Boolean).join(' ').toLowerCase() + ' ';
+  const p = PRODUK.find(p => !sudahIklan.has(p.nama) && p.kata.some(k => new RegExp('(^|[^a-z0-9])' + k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(isi)));
+  if(!p || !$('iklan').showModal) return;
+  sudahIklan.add(p.nama);
+  $('iklanGambar').src = p.gambar; $('iklanGambar').alt = 'Iklan ' + p.nama;
+  $('iklanNama').textContent = 'Biar makin seru: ' + p.nama;
+  $('iklanPengganti').textContent = p.pengganti ? 'Nggak punya? ' + p.pengganti + '. Kartunya tetap bisa dimainkan.' : 'Kartunya tetap bisa dimainkan tanpa ini.';
+  $('iklanTautan').style.display = p.tautan ? '' : 'none';
+  if(p.tautan) $('iklanTautan').href = p.tautan;
+  $('iklan').showModal();
+}
+
 /* ================= sesi ================= */
 function startSesi(mode){
   S.mode = mode;
@@ -538,6 +577,7 @@ function kpDraw(){
     try{ localStorage.setItem('kp_coba_kartu', n + 1); }catch(e){}
   }
   S.current = S.deck[S.idx]; S.phase = 'card'; buzz(25); save(); render();
+  cekProduk(S.current.t, S.current.d, S.current.alat);
 }
 
 /* satu kartu = satu poin: yang menang ronde itu yang dapat */
@@ -559,6 +599,7 @@ function kpGagal(i){
   S.jenisHukum = 'game';
   S.phase = 'hukum';
   buzz([140,70,140]); save(); render();
+  cekProduk(S.hukum && S.hukum.t);
   toast(nama(i) + ' nggak bisa jawab — poin 0 · langsung hukuman 🔥');
 }
 function selesaiSesi(){ return S.skor[0] >= S.target || S.skor[1] >= S.target || S.idx >= S.deck.length; }
@@ -610,6 +651,7 @@ function gantiHukumanGame(){
   if(S.jenisHukum !== 'game') return;
   S.hukum = tarikHukumGame();
   save(); render(); toast('Hukuman diganti 🔄');
+  cekProduk(S.hukum.t);
 }
 
 /* hadiah buat pemenang */
@@ -627,6 +669,7 @@ function acakHadiah(){
   S.hukum = {k:c.k, n:c.n, who:c.who, t:c.t};
   S.jenisHukum = 'hadiah';
   S.phase = 'hukum'; save(); render(); buzz([60,40,60]);
+  cekProduk(S.hukum.t);
 }
 function hukumLanjut(){
   const h = S.hukum; if(!h) return;
@@ -1309,6 +1352,7 @@ $('setSave').onclick = ()=>{
   if(S.mode !== 'manis') setTimeout(()=> startSesi(S.mode), 600);
 };
 
+$('iklanTutup').onclick = $('iklanLanjut').onclick = () => $('iklan').close();
 $('bpEkspor').onclick = kpBuatBackup;
 $('bpUnduh').onclick = kpUnduhBackup;
 $('bpSalin').onclick = kpSalinBackup;
@@ -1392,7 +1436,7 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
 window.KP = {
   get s(){ return S; }, startSesi, kpDraw, kpPoin, kpGagal, hitungHasil, nextRound, seriPenentu,
   obGo, obNext, renderOb, startOnboard,
-  acakHadiah, tarikHadiah, hadiahOf, ADMIN,
+  acakHadiah, tarikHadiah, hadiahOf, ADMIN, PRODUK, cekProduk,
   tarikHukumGame, gantiHukumanGame, hukumOf,
   hukumLanjut, hukumVeto, bayarToken,
   switchTab, pilihMode, isiUlang, stopDisini, tutupSesi, ulangGame, toggleTimer, manisNext, manisBabakNext, pakaiToken,

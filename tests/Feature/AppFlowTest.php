@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\StatusBayar;
 use App\Models\Deck;
 use App\Models\Pembayaran;
+use App\Models\ProdukPendukung;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -229,5 +230,20 @@ class AppFlowTest extends TestCase
 
         $this->assertSame(['Kartu satu', 'Kartu dua'], array_column(Deck::untukGame()['game']['featured'], 't'));
         $this->actingAs($this->lunas())->get('/app')->assertSee('const BATAS_COBA = 0', false);
+    }
+
+    public function test_supporting_products_reach_the_game_and_admin(): void
+    {
+        ProdukPendukung::create(['nama' => 'Borgol bulu', 'gambar' => 'produk/borgol.webp', 'tautan' => 'https://sedia.sayogicreative.com/borgol',
+            'kata_kunci' => ' Borgol, handcuff ', 'pengganti' => 'Pakai tali atau ikat pinggang']);
+        ProdukPendukung::create(['nama' => 'Mati', 'gambar' => 'produk/x.webp', 'kata_kunci' => 'x', 'aktif' => false]);
+
+        $produk = ProdukPendukung::untukGame();
+        $this->assertCount(1, $produk);
+        $this->assertSame(['borgol', 'handcuff'], $produk[0]['kata']);
+        $this->get('/coba')->assertSee('Pakai tali atau ikat pinggang', false)->assertSee('id="iklan"', false);
+
+        config(['mesra.admin_emails' => ['admin@example.test']]);
+        $this->actingAs(User::factory()->create(['email' => 'admin@example.test']))->get('/admin/produk-pendukungs')->assertOk()->assertSee('Borgol bulu');
     }
 }
