@@ -150,7 +150,7 @@ Semua yang tampil adalah barang cetakan dari sebuah kamar hotel bulan madu: gant
 
 Kedalaman datang dari cara kerja percetakan: bidang tinta, garis tinta, titik halftone yang meleset ke kanan bawah, dan tinta bertekstur pada cap. Gerak boleh hidup selama bendanya tetap kertas tipis: gantungan berayun dari lubang kenopnya dan terbalik untuk menampilkan kartu asli. Kepadatannya lapang di bidang, rapat di dalam barang cetakan, dengan target sentuh besar karena produk ini dipakai di HP dalam cahaya redup.
 
-Cakupan: dunia ini baru berlaku pasti untuk landing di rute `/` (`resources/views/landing.blade.php`). Layar game (`resources/views/game.blade.php`) dan login (`resources/views/auth.blade.php`) masih memakai tampilan lama (latar `#170f16`, aksen mawar `#ff7aa2`, emas, hijau, sudut 20px, huruf sistem) dan belum dimigrasi. Itu drift yang diketahui; nilai lama itu bukan bagian dari sistem ini, dan migrasinya butuh keputusan tersendiri.
+Cakupan: dunia ini berlaku untuk landing di rute `/` (`resources/views/landing.blade.php`) dan layar game di `/coba` dan `/app` (`resources/views/game.blade.php`). Di layar game, kartu adalah barang cetakan: kartu blush (Manis, Lucu, peluk) atau pink (Nakal) dengan cap bibir di sudut dan bayangan halftone, sedangkan punggung deck adalah kertas pink bercetak hati dan bibir. Halaman login dan beli (`auth.blade.php`, `beli.blade.php`) masih memakai tampilan lama (latar `#170f16`, aksen mawar `#ff7aa2`, sudut 20px, huruf sistem); itu drift yang diketahui dan belum dimigrasi.
 
 **Key Characteristics:**
 - Tepat tiga tinta di bidang penuh, berganti antarbagian seperti lembar cetak yang berbeda.
