@@ -171,6 +171,47 @@ class AppFlowTest extends TestCase
         $this->get('/app')->assertOk();   // admin tidak perlu bayar
     }
 
+    public function test_deck_admin_fills_decks_but_cannot_see_money_or_accounts(): void
+    {
+        config(['mesra.admin_emails' => ['admin@example.test']]);
+        $super = User::factory()->create(['email' => 'admin@example.test']);
+
+        $this->actingAs($super)->get('/admin/users')->assertOk();
+
+        $nizar = User::factory()->create(['email' => 'deck@example.test']);
+        $nizar->forceFill(['is_admin' => true])->save();
+
+        $this->actingAs($nizar)->get('/admin/decks')->assertOk();
+        $this->get('/admin/pembayarans')->assertForbidden();
+        $this->get('/admin/users')->assertForbidden();
+        $this->get('/app')->assertOk();
+    }
+
+    public function test_superadmin_creates_deck_admin_from_panel(): void
+    {
+        config(['mesra.admin_emails' => ['admin@example.test']]);
+        $this->actingAs(User::factory()->create(['email' => 'admin@example.test']));
+
+        \Livewire\Livewire::test(\App\Filament\Resources\Users\Pages\ManageUsers::class)
+            ->callAction('create', data: ['name' => 'John Doe', 'email' => 'deck@example.test', 'password' => 'rahasia123', 'is_admin' => true])
+            ->assertHasNoActionErrors();
+
+        $akun = User::where('email', 'deck@example.test')->sole();
+        $this->assertTrue($akun->isAdmin());
+        $this->assertFalse($akun->isSuperadmin());
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('rahasia123', $akun->password));
+    }
+
+    public function test_register_cannot_grant_admin(): void
+    {
+        $this->post('/register', [
+            'name' => 'Iseng', 'email' => 'iseng@example.com', 'is_admin' => 1,
+            'password' => 'rahasia123', 'password_confirmation' => 'rahasia123',
+        ]);
+
+        $this->assertFalse(User::where('email', 'iseng@example.com')->sole()->isAdmin());
+    }
+
     public function test_admin_decks_reach_the_game(): void
     {
         $acak = Deck::create(['judul' => 'Acak', 'jenis' => 'game', 'featured' => false]);

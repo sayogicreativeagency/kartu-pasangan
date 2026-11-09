@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
+// is_admin fillable untuk form /admin; pendaftaran hanya meneruskan data tervalidasi (nama, email, password).
+#[Fillable(['name', 'email', 'password', 'is_admin'])]
 #[Hidden(['password', 'remember_token', 'game_state'])]
 class User extends Authenticatable implements FilamentUser
 {
@@ -31,6 +32,7 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'game_state' => 'encrypted',
+            'is_admin' => 'boolean',
         ];
     }
 
@@ -39,9 +41,16 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Pembayaran::class);
     }
 
-    public function isAdmin(): bool
+    /** Superadmin dari ADMIN_EMAILS: mengatur akun dan pembayaran. */
+    public function isSuperadmin(): bool
     {
         return in_array(strtolower($this->email), array_map('strtolower', config('mesra.admin_emails')), true);
+    }
+
+    /** Admin mengisi deck kartu; diangkat superadmin lewat menu Akun. */
+    public function isAdmin(): bool
+    {
+        return $this->isSuperadmin() || $this->is_admin;
     }
 
     public function punyaAkses(): bool

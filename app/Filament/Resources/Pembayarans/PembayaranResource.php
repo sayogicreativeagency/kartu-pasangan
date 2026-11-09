@@ -25,6 +25,11 @@ class PembayaranResource extends Resource
 
     protected static ?string $pluralModelLabel = 'pembayaran';
 
+    public static function canAccess(): bool
+    {
+        return (bool) auth()->user()?->isSuperadmin();
+    }
+
     public static function canCreate(): bool
     {
         return false;
