@@ -30,7 +30,9 @@ Permainannya intim tetapi punya pagar yang nyata: Mode Nakal hanya terbuka kalau
 
 - Tiga mode: Kartu Manis (tiga babak, jeda ngobrol tiap lima kartu, tanpa skor), Permainan Lucu (26 mini game, kalah kena hukuman lucu), Permainan Nakal (mini game, hukuman langsung, helai, token, hadiah untuk juara).
 - Akun menyimpan data game terenkripsi, sehingga ikut ke HP mana pun pasangan login.
-- Belum diputuskan: akan ada versi berbayar, tetapi isi dan harganya belum ditetapkan. Jangan menulis harga, nama paket, atau klaim "gratis".
+- Tamu bisa mencoba 3 kartu di `/coba`; kartu ke-4 meminta daftar dan beli.
+- Akses penuh: Rp70.000 sekali bayar lewat QRIS DANA dengan nominal unik, dicek manual admin di `/admin`. Modul langganan bulanan sudah disiapkan tetapi belum dijual. Jangan menulis klaim "gratis".
+- Admin (Nizar) mengisi deck kartu di `/admin`: deck biasa dicampur acak, deck featured keluar berurutan.
 
 ## Brand Commitments
 

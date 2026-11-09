@@ -1,11 +1,13 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BeliController;
+use App\Models\Deck;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'landing');
-Route::view('/coba', 'game', ['sync' => false]);
+Route::get('/coba', fn () => view('game', ['sync' => false, 'decks' => Deck::untukGame()]));
 // App lama yang sudah terinstal masih membuka start_url ini; landing mengalihkannya ke /app.
 Route::redirect('/index.html', '/');
 
@@ -20,8 +22,13 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::view('/app', 'game', ['sync' => true]);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::get('/beli', [BeliController::class, 'tampil']);
+    Route::post('/beli', [BeliController::class, 'lapor'])->middleware('throttle:10,1');
+});
+
+Route::middleware(['auth', 'akses'])->group(function () {
+    Route::get('/app', fn () => view('game', ['sync' => true, 'decks' => Deck::untukGame()]));
 
     Route::get('/app/state', fn (Request $request) => response($request->user()->game_state ?? 'null')
         ->header('Content-Type', 'application/json')

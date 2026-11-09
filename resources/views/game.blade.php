@@ -280,12 +280,12 @@
         </ul>
       </div>
       <ul class="rules">
-        <li><b>Poin cuma buat yang menang.</b> Satu kartu = satu ronde. Yang menang ronde itu dapat <b>1 poin</b> — tekan <b>✅ [nama] +1</b>.</li>
-        <li><b>Nggak bisa jawab / nggak ada yang menang = nggak ada poin.</b> Tekan <b>✗ [nama] gagal</b> atau <b>✗ nggak ada poin</b> — <b>lawan nggak dapat poin apa-apa</b>. Di mode Nakal, yang gagal tetap <b>langsung jalanin 1 kartu hukuman</b> sebelum lanjut.</li>
+        <li><b>Yang narik kartu nantang, pasangannya yang main.</b> Tekan <b>✅ Berhasil</b> = yang main dapat <b>1 poin</b>.</li>
+        <li><b>✗ Gagal = nggak ada poin.</b> Di mode Nakal, yang gagal <b>langsung jalanin 1 kartu hukuman</b> sebelum lanjut. Mau skip? <b>🚫 Lewati</b>, bayar 1 helai.</li>
         <li><b>Siapa duluan sampai skor maksimal (default 10, bisa diubah 3–30) = JUARA</b> → sesi selesai. Kartu habis dan skornya masih seri? Tarik <b>1 kartu penentu</b> — yang menang kartu itu juaranya.</li>
-        <li><b>Bonus juara: HADIAH 🎁.</b> Pemenang disodorin <b>3 kartu hadiah acak</b> — dia <b>pilih 1</b>. Isinya di tab Isi → 🎁 <b>Hadiah buat pemenang</b>. Nggak cocok? Tekan 🎲 <b>Acak 3 kartu lagi</b>.</li>
+        <li><b>Bonus juara: HADIAH 🎁.</b> Tekan 🎲 <b>Acak hadiah</b> — satu kartu keluar buat juara. Nggak cocok? Acak lagi, atau 🔄 <b>Ulang game</b>. Isinya di tab Isi → 🎁 <b>Hadiah buat pemenang</b>.</li>
         <li><b>Isinya kalian yang tulis.</b> Tipe <b>Misi</b> = perintah/arahan. Tipe <b>Helai</b> = lepas pakaian 1–2 helai (who: diri / pilih / berdua). Mau sepanas apa, kalian yang atur.</li>
-        <li><b>🚫 Token ada harganya.</b> Pakai token — lewati kartu atau batalkan hukuman — <b>wajib buang 1 helai</b> (Mode Nakal). Tiap pemain punya <b>2 token</b>.</li>
+        <li><b>🚫 Token = helai = nyawa.</b> Token kalian sebanyak helai yang masih nempel. Lewati kartu atau batalkan hukuman = <b>buang 1 helai</b>. Di mode Lucu namanya nyawa.</li>
         <li><b>🔒 Kata aman gratis.</b> Sebut kata aman = berhenti total — tanpa potongan helai, tanpa alasan. 🔄 Ganti hukuman juga gratis (hukumannya ditukar, bukan dibatalkan).</li>
         <li><b>🫂 Penutup.</b> Setiap sesi selesai ditutup dengan <b>peluk pasanganmu 20 detik</b> + pengingat: permainan ini cuma buat <b>keintiman kalian berdua</b>, bukan lomba.</li>
         <li><b>Giliran.</b> Tarikan tetap selang-seling; game dipandu oleh yang narik kartu, mainnya berdua.</li>
@@ -428,6 +428,11 @@ const SESI = {main:15, nakal:12};
 const SAFE_DEFAULT = 'BERHENTI';
 const MODE_LABEL = {manis:'KARTU MANIS', main:'PERMAINAN LUCU', nakal:'PERMAINAN NAKAL 🔥'};
 
+/* ================= deck admin & batas coba (dari server) ================= */
+const ADMIN = @json($decks);
+const BATAS_COBA = {{ $sync ? 0 : config('mesra.batas_coba') }};   // 0 = tanpa batas (akun berbayar)
+const HARGA = 'Rp {{ number_format(config('mesra.harga_sekali'), 0, ',', '.') }}';
+
 /* ================= state ================= */
 const KEY='kartu_pasangan_{{ $sync ? 'u'.auth()->id() : 'v2' }}', OLDKEY='kartu_pasangan_v1';
 const S0 = () => ({
@@ -435,7 +440,7 @@ const S0 = () => ({
   consent:{a:false,b:false,word:SAFE_DEFAULT,on:false},
   helaiN:5, helai:[5,5], skor:[0,0], target:10, winner:0,
   deck:[], idx:0, since:0, phase:'idle', current:null, hukum:null,
-  hadiahPool:[], hukGamePool:[], jenisHukum:'', selesai:false, pilihan:[], loser:0, noProp:false, drawer:0, veto:[2,2], refl:0, refQ:'',
+  hadiahPool:[], hukGamePool:[], jenisHukum:'', selesai:false, loser:0, noProp:false, drawer:0, refl:0, refQ:'',
   custom:{}
 });
 let S = load();
@@ -469,8 +474,20 @@ function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.fl
 function esc(s){ return String(s).replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 function pick(a, n){ return shuffle(a).slice(0, n); }
 
-function gamesOf(){ return (S.custom.game && S.custom.game.length) ? S.custom.game : GAMES; }
-function manisOf(b){ return (S.custom['manis'+b] && S.custom['manis'+b].length) ? S.custom['manis'+b] : MANIS[b]; }
+function gamesOf(){ return (S.custom.game && S.custom.game.length) ? S.custom.game : GAMES.concat(ADMIN.game.pool); }
+function manisOf(b){ return (S.custom['manis'+b] && S.custom['manis'+b].length) ? S.custom['manis'+b] : MANIS[b].concat(ADMIN.manis.pool.filter(c => c.b === b)); }
+/* deck featured admin keluar berurutan; kalau kalian punya kartu sendiri, kartu kalian yang dipakai */
+function manisDeck(b){
+  const sendiri = S.custom['manis'+b] && S.custom['manis'+b].length;
+  const urut = !sendiri && ADMIN.manis.featured ? ADMIN.manis.featured.filter(c => c.b === b) : [];
+  return (urut.length ? urut : shuffle(manisOf(b))).map(c=>({kind:'manis', a:c.a, t:c.t}));
+}
+function gameDeck(mode){
+  if(!(S.custom.game && S.custom.game.length) && ADMIN.game.featured) return ADMIN.game.featured.map(x=>({kind:'game', t:x.t, d:x.d, alat:x.alat, sec:x.sec}));
+  let g = gamesOf().filter(x => !S.noProp || (x.alat||'—').trim() === '—');
+  if(!g.length) g = gamesOf();
+  return pick(g, Math.min(SESI[mode], g.length)).map(x=>({kind:'game', t:x.t, d:x.d, alat:x.alat, sec:x.sec}));
+}
 function hukLucuOf(){ return (S.custom.hukL && S.custom.hukL.length) ? S.custom.hukL.map(x => typeof x==='string' ? {t:x} : x) : HUK_LUCU.map(t=>({t})); }
 function hukLucuPool(){ return (S.custom.hukL && S.custom.hukL.length) ? S.custom.hukL.map(x => typeof x==='string' ? {t:x} : x) : HUK_LUCU.map(t=>({t})); }
 function hadiahOf(){ return (S.custom.hadiah && S.custom.hadiah.length) ? S.custom.hadiah : HADIAH; }
@@ -480,16 +497,14 @@ function hukumOf(){ return (S.custom.hukum && S.custom.hukum.length) ? S.custom.
 function startSesi(mode){
   S.mode = mode;
   S.idx = 0; S.since = 0; S.phase = 'idle'; S.current = null; S.hukum = null;
-  S.drawer = 0; S.veto = [2,2]; S.refl = 0; S.refQ = ''; S.skor = [0,0]; S.winner = 0; S.loser = 0;
+  S.drawer = 0; S.refl = 0; S.refQ = ''; S.skor = [0,0]; S.winner = 0; S.loser = 0;
   S.helai = [S.helaiN, S.helaiN];
   if(mode === 'manis'){
     S.babak = 1;
-    S.deck = shuffle(manisOf(1)).map(c=>({kind:'manis', a:c.a, t:c.t}));
+    S.deck = manisDeck(1);
   }else{
     S.babak = 1;
-    let g = gamesOf().filter(x => !S.noProp || (x.alat||'—').trim() === '—');
-    if(!g.length) g = gamesOf();
-    S.deck = pick(g, Math.min(SESI[mode], g.length)).map(x=>({kind:'game', t:x.t, d:x.d, alat:x.alat, sec:x.sec}));
+    S.deck = gameDeck(mode);
   }
   S.hadiahPool = []; S.hukGamePool = []; S.jenisHukum = ''; S.selesai = false;
   save(); switchTab('game'); render();
@@ -499,6 +514,12 @@ function startSesi(mode){
 function kpDraw(){
   if(S.phase !== 'idle') return;
   if(S.idx >= S.deck.length){ hitungHasil(); return; }
+  if(BATAS_COBA){
+    // ponytail: hitungan di HP ini saja, bisa diakali lewat mode penyamaran; pindah ke server kalau bocornya terasa
+    let n = 0; try{ n = +(localStorage.getItem('kp_coba_kartu') || 0); }catch(e){}
+    if(n >= BATAS_COBA){ S.phase = 'batas'; render(); return; }
+    try{ localStorage.setItem('kp_coba_kartu', n + 1); }catch(e){}
+  }
   S.current = S.deck[S.idx]; S.phase = 'card'; buzz(25); save(); render();
 }
 
@@ -523,12 +544,6 @@ function kpGagal(i){
   buzz([140,70,140]); save(); render();
   toast(nama(i) + ' nggak bisa jawab — poin 0 · langsung hukuman 🔥');
 }
-function kpKosong(){
-  if(S.phase !== 'card') return;
-  S.idx++; S.since++; S.current = null; S.hukum = null;
-  toast('Nggak ada yang dapat poin — lanjut 🎮');
-  nextRound();
-}
 function selesaiSesi(){ return S.skor[0] >= S.target || S.skor[1] >= S.target || S.idx >= S.deck.length; }
 function nextRound(){
   S.hukum = null; S.jenisHukum = '';
@@ -548,7 +563,6 @@ function hitungHasil(){
   S.winner = win;
   S.selesai = true;
   S.jenisHukum = 'hadiah';
-  S.pilihan = siapkanPilihan(3);  // 3 kartu random buat dipilih
   S.phase  = 'hasil';
   save(); render(); buzz([90,70,90]);
 }
@@ -591,30 +605,11 @@ function tarikHadiah(){
   if(!S.hadiahPool || !S.hadiahPool.length) S.hadiahPool = shuffle(pool.slice());
   return S.hadiahPool.pop() || pool[0];
 }
-/* ambil n kartu berbeda buat ditawarin */
-function siapkanPilihan(n){
-  n = n || 3;
-  const src = isNakal() ? hadiahOf() : hukLucuPool();
-  const mau = Math.min(n, src.length);
-  const out = [];
-  let guard = 0;
-  while(out.length < mau && guard++ < 200){
-    const c = isNakal() ? tarikHadiah() : src[Math.floor(Math.random()*src.length)];
-    if(c && !out.some(x => x.t === c.t)) out.push({k: isNakal() ? c.k : 'lucu', n:c.n, who:c.who, t:c.t});
-  }
-  return out;
-}
-function pilihHadiah(i){
-  if(S.phase !== 'hasil') return;
-  const c = S.pilihan[i]; if(!c) return;
+function acakHadiah(){
+  const c = tarikHadiah();
   S.hukum = {k:c.k, n:c.n, who:c.who, t:c.t};
   S.jenisHukum = 'hadiah';
   S.phase = 'hukum'; save(); render(); buzz([60,40,60]);
-}
-function acakPilihan(){
-  S.pilihan = siapkanPilihan(3);
-  S.phase = 'hasil'; S.hukum = null; S.jenisHukum = 'hadiah';
-  save(); render(); toast('3 kartu baru, pilih lagi 🎲');
 }
 function hukumLanjut(){
   const h = S.hukum; if(!h) return;
@@ -628,41 +623,27 @@ function hukumLanjut(){
   S.phase = (isNakal() && (S.helai[0] <= 0 || S.helai[1] <= 0)) ? 'panas' : 'penutup';
   save(); render();
 }
-/* pakai token = WAJIB buang 1 helai (cuma berlaku di Mode Nakal) */
+/* token = helai = nyawa: lewati kartu atau batalkan hukuman = buang 1 helai (di mode Lucu disebut nyawa) */
+const NYAWA = () => isNakal() ? 'helai' : 'nyawa';
 function bayarToken(i){
-  if(!isNakal()) return '';
-  const sisa = Math.max(0, (S.helai[i] || 0) - 1);
-  S.helai[i] = sisa;
+  if(S.helai[i] <= 0){ toast(nama(i) + ' udah nggak punya ' + NYAWA() + ' — pakai kata aman kalau mau berhenti 🔒'); return false; }
+  S.helai[i]--;
   buzz([150,60,150]);
-  return '👕 ' + nama(i) + ' wajib buang 1 helai (sisa ' + sisa + ')';
+  toast(nama(i) + ' buang 1 ' + NYAWA() + ' (sisa ' + S.helai[i] + ') 🚫');
+  return true;
 }
 function hukumVeto(){
-  const d = S.veto[S.loser] > 0 ? S.loser : other(S.loser);
-  if(S.veto[d] <= 0){ toast('Token kalian habis — bisa pakai kata aman 🔒'); return; }
-  S.veto[d]--;
-  const byr = bayarToken(d);
-  if(S.jenisHukum === 'game'){
-    toast('Hukuman dibatalkan pakai token 🚫' + (byr ? ' · ' + byr : '') + ' — lanjut main');
-    nextRound(); return;
-  }
-  S.hukum = null;
-  S.phase = (isNakal() && (S.helai[0] <= 0 || S.helai[1] <= 0)) ? 'panas' : 'penutup';
-  toast('Hukuman dibatalkan pakai token 🚫' + (byr ? ' · ' + byr : ''));
-  save(); render();
+  if(S.jenisHukum !== 'game' || !bayarToken(S.loser)) return;
+  nextRound();
 }
 function pakaiToken(){
-  const d = S.drawer;
-  if(S.veto[d] <= 0){ toast('Token ' + nama(d) + ' udah habis'); return; }
-  S.veto[d]--;
-  const byr = bayarToken(d);
+  if(S.phase !== 'card') return;
+  if(isGame() && !bayarToken(other(S.drawer))) return;   // yang ditantang yang bayar
   S.idx++; S.current = null;
-  if(isNakal() && (S.helai[0] <= 0 || S.helai[1] <= 0)){
-    S.hukum = null; S.jenisHukum = ''; S.phase = 'panas'; save(); render();
-    toast('Token dipakai · ' + byr + ' — helai habis 🔥'); return;
-  }
-  if(S.idx >= S.deck.length){ toast('Kartu dilewati 🚫' + (byr ? ' · ' + byr : '')); hitungHasil(); return; }
+  if(isNakal() && (S.helai[0] <= 0 || S.helai[1] <= 0)){ S.hukum = null; S.jenisHukum = ''; S.phase = 'panas'; save(); render(); return; }
+  if(S.idx >= S.deck.length){ if(isGame()) hitungHasil(); else { S.phase = (S.babak >= 3) ? 'penutup' : 'done'; save(); render(); } return; }
   S.drawer = other(S.drawer); S.phase = 'idle'; save(); render();
-  toast('Kartu dilewati pakai token 🚫' + (byr ? ' · ' + byr : ''));
+  if(!isGame()) toast('Kartu dilewati 🚫');
 }
 
 /* ================= render ================= */
@@ -689,14 +670,14 @@ function render(){
     const on = (S.phase!=='done' && S.phase!=='panas' && S.drawer===i) ? ' on' : '';
     let s = (S.drawer===i ? '🎴 giliran · ' : '');
     if(isGame()) s += '✅ '+S.skor[i];
-    if(isNakal()) s += ' · 👕 '+S.helai[i];
+    if(isGame()) s += ' · '+(isNakal()?'👕 ':'❤️ ')+S.helai[i];
     return '<div class="p'+on+'"><b>'+esc(nama(i))+'</b><span>'+s+'</span>'+
-      '<div class="tokens">'+[0,1].map(t=>'<span class="tok'+(t<S.veto[i]?' live':'')+'"></span>').join('')+'</div></div>';
+      (isGame() ? '<div class="tokens">'+Array.from({length:S.helaiN},(_,t)=>'<span class="tok'+(t<S.helai[i]?' live':'')+'"></span>').join('')+'</div>' : '')+'</div>';
   }).join('');
 
   $('gSafe').style.display = isNakal() ? 'block' : 'none';
   $('gSafe').innerHTML = '🔒 Kata aman: <b>' + esc(S.consent.word || SAFE_DEFAULT) + '</b> — dipanggil kapan pun, tanpa penjelasan.' +
-    (isNakal() ? '<br>🚫 Token tetap boleh — tapi tiap pakai token <b>wajib buang 1 helai</b>.' : '');
+    (isNakal() ? '<br>🚫 Token = helai. Lewati kartu atau batalkan hukuman = <b>buang 1 helai</b>; helai habis, token habis.' : '');
 
   // tombol ulang game — selalu ada di layar Main, kapan pun (tekan 2x biar nggak kepencet)
   const gr = $('gRestart');
@@ -723,8 +704,7 @@ function renderGame(){
     ? '<span class="chip">🏁 main sampai <b>'+S.target+'</b> poin</span>' +
       (isNakal() ? '<span class="chip">🎁 yang menang dapat <b>hadiah</b></span>'
                  : '<span class="chip">😄 yang kalah dapat <b>hukuman lucu</b></span>') +
-      (isNakal() ? '<span class="chip">👕 helai <b>'+S.helai[0]+'</b> : <b>'+S.helai[1]+'</b></span>'+
-                   '<span class="chip">🚫 token <b>'+(S.veto[0]+S.veto[1])+'</b> · 1 token = <b>−1 helai</b></span>' : '')
+      '<span class="chip">'+(isNakal()?'👕 helai':'❤️ nyawa')+' <b>'+S.helai[0]+'</b> : <b>'+S.helai[1]+'</b> · lewati = <b>−1</b></span>'
     : '';
   const body = $('gBody'), acts = $('gActions'), c = S.current;
 
@@ -777,29 +757,13 @@ function renderGame(){
   }
 
   if(S.phase === 'hasil'){
-    const juara = S.winner === undefined ? (S.loser === 0 ? 1 : 0) : S.winner;
-    if(!S.pilihan || !S.pilihan.length) S.pilihan = siapkanPilihan(3);
-    const pemilih = isNakal() ? juara : S.loser;
-    const ops = S.pilihan.map((p,i)=>{
-      const kd = isNakal()
-        ? (p.k === 'helai' ? ('👕 helai '+p.n+' · '+(p.who==='pilih'?'pemenang nunjuk':p.who==='berdua'?'berdua kena':'dia pilih sendiri'))
-                           : '🔥 misi buat pemenang')
-        : '😄 hukuman lucu';
-      return '<button class="opt'+(isNakal()?' hot':'')+'" onclick="pilihHadiah('+i+')">'+
-        '<span class="num">'+(i+1)+'</span>'+
-        '<span><span class="tx">'+esc(p.t)+'</span><span class="kd">'+kd+'</span></span></button>';
-    }).join('');
-    body.innerHTML = '<div class="face '+(isNakal()?'hot':'warm')+'" style="gap:8px">'+
-      '<div class="pill">'+(isNakal()?'🎁 HADIAH PEMENANG · PILIH 1 DARI ':'😄 HUKUMAN LUCU · PILIH 1 DARI ')+S.pilihan.length+'</div>'+
-      '<div class="hint">🏆 '+esc(nama(juara))+' menang '+S.skor[juara]+' : '+S.skor[S.loser]+
-        ' · yang kalah: <b>'+esc(nama(S.loser))+'</b>'+
-        '<br><b>'+esc(nama(pemilih))+'</b> yang milih satu kartu di bawah ini. Kartunya dijalankan malam ini.</div>'+
-      '<div class="optwrap">'+ops+'</div></div>';
-    acts.innerHTML = '<div class="row" style="margin-top:2px">'+
-        '<button class="btn soft" onclick="acakPilihan()" style="flex:1;padding:13px;font-size:13px">🎲 Acak 3 kartu lagi</button>'+
-        '<button class="btn ghost" onclick="hukumVeto()" style="flex:1;padding:13px;font-size:13px">🚫 Token (batalkan)'+(isNakal()?' −1 helai':'')+'</button>'+
-      '</div>'+
-      '<button class="btn ghost" onclick="goTab(\'editor\')" style="margin-top:10px;padding:12px;font-size:13px">✍️ Tulis / ubah kartu hadiah</button>';
+    const juara = S.winner, kalah = S.loser;
+    body.innerHTML = '<div class="face '+(isNakal()?'hot':'warm')+'"><div style="font-size:46px">🏆</div>'+
+      '<div class="q big">'+esc(nama(juara))+' juara!</div>'+
+      '<div class="hint">Skor akhir '+S.skor[0]+' : '+S.skor[1]+'. '+
+        (isNakal() ? 'Acak satu <b>hadiah</b> buat '+esc(nama(juara))+'.' : 'Acak satu <b>hukuman lucu</b> buat '+esc(nama(kalah))+'.')+'</div></div>';
+    acts.innerHTML = '<button class="btn'+(isNakal()?' hot':'')+'" onclick="acakHadiah()">🎲 Acak '+(isNakal()?'hadiah':'hukuman lucu')+'</button>'+
+      '<button class="btn ghost" onclick="startSesi(S.mode)" style="margin-top:10px">🔄 Ulang game</button>';
     return;
   }
 
@@ -833,9 +797,10 @@ function renderGame(){
       '<div class="hint">'+hint+'</div></div>';
     acts.innerHTML = '<button class="btn ok" onclick="hukumLanjut()">'+(perGame?'Sudah dijalankan ✓ lanjut main':'Sudah dijalankan ✓ selesai')+'</button>'+
       '<div class="row">'+
-        (perGame ? '<button class="btn soft" onclick="gantiHukumanGame()" style="flex:1;padding:12px;font-size:12.5px">🔄 Ganti hukuman</button>'
-                 : '<button class="btn soft" onclick="acakPilihan()" style="flex:1;padding:12px;font-size:12.5px">🎲 Pilih dari 3 kartu lain</button>')+
-        '<button class="btn ghost" onclick="hukumVeto()" style="flex:1;padding:12px;font-size:12.5px">🚫 Token'+(isNakal()?' · −1 helai':'')+'</button>'+
+        (perGame ? '<button class="btn soft" onclick="gantiHukumanGame()" style="flex:1;padding:12px;font-size:12.5px">🔄 Ganti hukuman</button>'+
+                   '<button class="btn ghost" onclick="hukumVeto()" style="flex:1;padding:12px;font-size:12.5px">🚫 Batalkan · −1 '+NYAWA()+'</button>'
+                 : '<button class="btn soft" onclick="acakHadiah()" style="flex:1;padding:12px;font-size:12.5px">🎲 Acak lagi</button>'+
+                   '<button class="btn ghost" onclick="startSesi(S.mode)" style="flex:1;padding:12px;font-size:12.5px">🔄 Ulang game</button>')+
       '</div>';
     return;
   }
@@ -855,20 +820,13 @@ function renderGame(){
       '<div class="q big">'+esc(c.t)+'</div>'+
       '<div class="hint">'+esc(c.d)+'</div>'+
       '<div class="alat">🏠 '+(c.alat && c.alat.trim() !== '—' ? 'Alat: '+esc(c.alat) : 'Tanpa alat apa-apa')+'</div>'+
-      '<div class="hint">Dipandu '+esc(nama(S.drawer))+' — yang menang ronde ini dapat <b>1 poin</b>. Nggak bisa jawab = <b>nggak ada poin buat siapa pun</b>'+(isNakal()?' — yang gagal langsung kena hukuman':' (yang kalah di akhir dapat hukuman lucu)')+'.</div></div>';
+      '<div class="hint">'+esc(nama(S.drawer))+' nantang, '+esc(nama(other(S.drawer)))+' yang main. Berhasil = <b>1 poin</b> buat '+esc(nama(other(S.drawer)))+'. Gagal = <b>nggak ada poin</b>'+(isNakal()?' dan langsung kena hukuman':'')+'.</div></div>';
     acts.innerHTML = '<button class="btn ok" id="btnTim" onclick="toggleTimer('+c.sec+')">⏱ Mulai timer '+c.sec+' detik</button>'+
       '<div class="row">'+
-        '<button class="btn soft" onclick="kpPoin(0)" style="flex:1;padding:13px;font-size:12.5px">✅ '+esc(nama(0))+' +1</button>'+
-        '<button class="btn ghost" onclick="kpGagal(0)" style="flex:1;padding:13px;font-size:12px">✗ '+esc(nama(0))+' gagal</button>'+
+        '<button class="btn soft" onclick="kpPoin(other(S.drawer))" style="flex:1;padding:13px;font-size:13px">✅ Berhasil</button>'+
+        '<button class="btn ghost" onclick="kpGagal(other(S.drawer))" style="flex:1;padding:13px;font-size:13px">✗ Gagal</button>'+
       '</div>'+
-      '<div class="row" style="margin-top:8px">'+
-        '<button class="btn soft" onclick="kpPoin(1)" style="flex:1;padding:13px;font-size:12.5px">✅ '+esc(nama(1))+' +1</button>'+
-        '<button class="btn ghost" onclick="kpGagal(1)" style="flex:1;padding:13px;font-size:12px">✗ '+esc(nama(1))+' gagal</button>'+
-      '</div>'+
-      '<div class="row" style="margin-top:8px">'+
-        '<button class="btn ghost" onclick="kpKosong()" style="flex:1;padding:11px;font-size:12px">✗ nggak ada poin</button>'+
-        '<button class="btn ghost" onclick="pakaiToken()" style="flex:1;padding:11px;font-size:12px">🚫 Lewati (token '+S.veto[S.drawer]+(isNakal()?' · −1 helai':'')+')</button>'+
-      '</div>';
+      '<button class="btn ghost" onclick="pakaiToken()" style="margin-top:8px;padding:11px;font-size:12.5px">🚫 Lewati · −1 '+NYAWA()+' '+esc(nama(other(S.drawer)))+'</button>';
     return;
   }
 
@@ -879,7 +837,16 @@ function renderGame(){
         (c.a==='partner' ? ' — yang jalan '+esc(nama(other(S.drawer)))
          : c.a==='self' ? ' — dia juga yang jalan' : ' — kalian berdua')+'.</div></div>';
     acts.innerHTML = '<button class="btn" onclick="manisNext()">Selesai ✓ — giliran '+esc(nama(other(S.drawer)))+'</button>'+
-      '<div class="row"><button class="btn ghost" onclick="pakaiToken()" style="flex:1;padding:13px">🚫 Pakai token</button></div>';
+      '<div class="row"><button class="btn ghost" onclick="pakaiToken()" style="flex:1;padding:13px">🚫 Lewati kartu</button></div>';
+    return;
+  }
+
+  if(S.phase === 'batas'){
+    body.innerHTML = '<div class="face hot"><div style="font-size:42px">🔐</div>'+
+      '<div class="q big">Tiga kartu udah kalian coba.</div>'+
+      '<div class="hint">Mau lanjut sampai habis? Buka semua mode dan kartu dengan <b>'+HARGA+'</b>, sekali bayar.</div></div>';
+    acts.innerHTML = '<a class="btn hot" href="/register" style="display:block;text-align:center;text-decoration:none">Daftar & buka akses</a>'+
+      '<a class="btn ghost" href="/login" style="display:block;text-align:center;text-decoration:none;margin-top:10px">Sudah punya akun? Masuk</a>';
     return;
   }
 
@@ -936,7 +903,7 @@ function manisNext(){
 function manisBabakNext(){
   if(S.babak >= 3){ toast('Babak 3 udah babak terakhir'); return; }
   S.babak++;
-  S.deck = shuffle(manisOf(S.babak)).map(c=>({kind:'manis', a:c.a, t:c.t}));
+  S.deck = manisDeck(S.babak);
   S.idx = 0; S.since = 0; S.phase = 'idle'; S.current = null; S.drawer = other(S.drawer);
   save(); render(); toast('Babak ' + S.babak + ' dimulai 🎴');
 }
@@ -987,18 +954,19 @@ function obPenjelasan(m){
   if(m === 'main') return [
     'Satu kartu = satu <b>mini game berduaan</b>, dipandu yang narik kartu.',
     'Alatnya barang rumah: gelas, koin, kertas, karet, snack, bantal, kaus kaki.',
-    'Menang ronde = <b>1 poin</b>. <b>Nggak bisa jawab = nggak ada poin</b> — lawan juga nggak dapat apa-apa.',
+    'Yang narik nantang, pasangannya main. <b>Berhasil = 1 poin</b>, <b>gagal = nggak ada poin</b>.',
+    'Mau skip kartu? <b>Lewati</b> bayar 1 nyawa. Nyawa awal sama dengan jumlah helai di pengaturan.',
     'Di akhir sesi yang kalah dapat <b>hukuman lucu</b>: joget, nyanyi, pijat. Nggak ada yang buka baju.',
     'Bisa main <b>tanpa alat</b> — tombol 🏠 Tanpa alat di tab 🃏 Isi.',
     'Sesi selalu ditutup dengan <b>peluk 20 detik</b> + pengingat: ini cuma buat keintiman kalian berdua. 🫂'
   ];
   return [
     'Mini game yang sama dengan mode Lucu, cuma <b>lebih panas</b>.',
-    'Menang ronde = <b>1 poin</b>. <b>Nggak bisa jawab = nggak ada poin</b> buat siapa pun.',
+    'Yang narik nantang, pasangannya main. <b>Berhasil = 1 poin</b>, <b>gagal = nggak ada poin</b>.',
     'Yang gagal <b>langsung kena 1 kartu hukuman</b> sebelum lanjut main.',
-    'Duluan sampai <b>'+S.target+' poin = juara</b> → dapat <b>HADIAH</b> pilihan (isinya kalian tulis sendiri).',
+    'Duluan sampai <b>'+S.target+' poin = juara</b> → <b>HADIAH</b> diacak (isinya kalian tulis sendiri).',
     'Modal awal <b>'+S.helaiN+' helai</b>. Kalau habis, app minggir. 😏',
-    '🚫 Token (lewati kartu / batalkan hukuman): <b>wajib buang 1 helai</b> tiap pakai. Masing-masing punya 2 token.',
+    '🚫 Token = helai = nyawa. Lewati kartu atau batalkan hukuman = <b>buang 1 helai</b>.',
     '🔒 Kata aman <b>gratis</b> — sebut = berhenti total, tanpa potongan helai.',
     'Sesi selalu ditutup dengan <b>peluk 20 detik</b> + pengingat: ini cuma buat keintiman kalian berdua. 🫂'
   ];
@@ -1012,9 +980,9 @@ function renderOb(){
     html = '<h2>Halo, sayang 💞</h2>'+
       '<p class="sub">Isi nama kalian dulu ya. Nama ini yang dipakai di semua kartu dan skor.</p>'+
       '<label>Nama kamu (pemain 1)</label>'+
-      '<input id="pa" placeholder="mis. Nizar" autocomplete="off" value="'+esc(S.players[0]||'')+'">'+
+      '<input id="pa" placeholder="mis. John Doe" autocomplete="off" value="'+esc(S.players[0]||'')+'">'+
       '<label>Nama pasanganmu (pemain 2)</label>'+
-      '<input id="pb" placeholder="mis. Sayang" autocomplete="off" value="'+esc(S.players[1]||'')+'">';
+      '<input id="pb" placeholder="mis. Jane Doe" autocomplete="off" value="'+esc(S.players[1]||'')+'">';
     act = '<button class="btn" id="obA">Lanjut →</button>';
   } else if(obStep === 2){
     html = '<h2>Mau main yang mana? 🎴</h2><p class="sub">Pilih dulu — bisa diganti kapan saja lewat tombol di atas layar.</p>'+
@@ -1405,9 +1373,9 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
 }
 /* helper tes */
 window.KP = {
-  get s(){ return S; }, startSesi, kpDraw, kpPoin, kpKosong, kpGagal, hitungHasil, nextRound, seriPenentu,
+  get s(){ return S; }, startSesi, kpDraw, kpPoin, kpGagal, hitungHasil, nextRound, seriPenentu,
   obGo, obNext, renderOb, startOnboard,
-  pilihHadiah, acakPilihan, siapkanPilihan, tarikHadiah, hadiahOf,
+  acakHadiah, tarikHadiah, hadiahOf, ADMIN,
   tarikHukumGame, gantiHukumanGame, hukumOf,
   hukumLanjut, hukumVeto, bayarToken,
   switchTab, pilihMode, isiUlang, stopDisini, tutupSesi, ulangGame, toggleTimer, manisNext, manisBabakNext, pakaiToken,
